@@ -1,0 +1,92 @@
+:root {
+	--bg: #aaaaaa;
+	--surface: #ededed;
+	--divider: #d9d9d9;
+	--text: #111111;
+	--text-key: #518cc2;
+	--text-muted: #525252;
+	--text-warn: #730000;
+	--primary: #000000;
+	--primary-hover: #518cc2;
+	--secondary: #730000;
+	--border: #000000;
+
+	--divider-size: 0.4rem;
+	letter-spacing: 0.01em;
+
+	--font-sans: sans-serif;
+	--font-mono: monospace;
+
+	--transition-time: 0.2s;
+
+	--swatch-surround: #777777;
+	--border-radius: 1rem;
+	/* ≈ L*50 */
+
+	--sticky-left-margin: 1rem;
+	--sticky-max-width: 15rem;
+}
+
+/* --- Dark theme overrides --- */
+[data-theme='dark'] {
+	--bg: #0f0f10;
+	--surface: #1c1c1e;
+	--divider: #333334;
+	--text: #d3d3d3;
+	--text-muted: #ababab;
+	--text-warn: #fd9999;
+	--primary: #9c9c9c;
+	--primary-hover: #61b554;
+	--border: #505052;
+}
+
+/* --- Greyscale theme (neutral chrome; user's palette is the only chroma) --- */
+[data-theme='grey'] {
+	--bg: #bcbcbc;
+	--surface: #a8a8a8;
+	--divider: #8a8a8a;
+	--text: #161616;
+	--text-muted: #3a3a3a;
+	--text-warn: #500000;
+	--primary: #1f1f1f;
+	--primary-hover: #005c62;
+	/* was a blue/green accent — replaced with a lightness shift */
+	--border: #1f1f1f;
+}
+
+html {
+	background-color: var(--bg);
+}
+
+/* --- Global base styles --- */
+body {
+	background-color: none;
+	color: var(--text);
+	font-family: var(--font-sans);
+	margin: 0;
+}
+
+p {
+	font-size: 1.2em;
+}
+
+.card {
+	background-color: var(--surface);
+	border: 2px solid var(--border);
+	border-radius: var(--border-radius);
+	min-width: 2rem;
+	min-height: 2rem;
+	padding: 1rem;
+	margin: 1rem;
+
+	color: var(--text);
+}
+
+a {
+	color: var(--secondary);
+	font-weight: 800;
+}
+a:hover {
+	text-decoration: underline;
+	cursor: pointer;
+}

@@ -1,0 +1,32 @@
+
+
+7/7/26 (Launch):
+- Give it an actual theme (via editing the theme store and app.css)
+
+- spinning this bot idea in my head...
+- need images to look decent...
+
+okay, to make this better:
+- Every passage needs to be a card. These box shadow cards are nice.... https://www.adhamdannaway.com/portfolio
+- any image or interspertion needs to have a different width to really look good
+- asking 'why' should open some animation
+- hovering itself should have a smooth transition
+- Responsive background will be key here.
+
+
+
+
+
+Overall vision:
+- A central 'spine' of elements, interspersed photos, links, and text.
+- scrolling has it reveal itself gradually, or 'up from nowhere'
+
+desktop:
+- Little collapsable menu on the left, sticky
+
+mobile:
+- little collapsable menu on the top left
+
+
+
+https://portfoliostudio.dev/blog/best-developer-portfolio-examples
