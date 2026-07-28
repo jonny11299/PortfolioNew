@@ -1,5 +1,12 @@
 
 
+-- Possible improvements:
+
+	- could change all the borders to outlines that are inset, so that changing colors is seamless.
+
+
+
+
 7/7/26 (Launch):
 - Give it an actual theme (via editing the theme store and app.css)
 

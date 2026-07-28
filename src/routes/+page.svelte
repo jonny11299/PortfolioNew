@@ -6,7 +6,10 @@
 </script>
 
 <Nav />
+<!--
 <Bot />
+ -->
+
 <Body />
 
 <style>

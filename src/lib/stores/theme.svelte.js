@@ -1,9 +1,9 @@
 function createThemeStore() {
-	let theme = $state('system');
+	let theme = $state('light');
 
 	const isDark = $derived(
 		theme === 'dark' ||
-			(theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+			(theme === 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
 	);
 
 	function setTheme(newTheme) {
@@ -22,7 +22,7 @@ function createThemeStore() {
 
 	function init() {
 		const saved = localStorage.getItem('theme');
-		setTheme(saved ?? 'grey');
+		setTheme(saved ?? 'notebook');
 	}
 
 	return {

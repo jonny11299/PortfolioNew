@@ -15,14 +15,14 @@
 
 <style>
 	nav {
-		border: 2px solid black;
+		border: var(--border-width) solid var(--border);
 		border-radius: var(--border-radius);
 		background: var(--surface);
 		position: fixed;
 		top: 1rem;
 		right: var(--sticky-left-margin);
 		overflow: hidden;
-		padding: 0.75rem;
+		padding: var(--padding);
 
 		max-width: var(--sticky-max-width);
 		z-index: 100;

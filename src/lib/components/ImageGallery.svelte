@@ -1,12 +1,18 @@
 <script>
-	import { fade } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
+
 	let { images } = $props();
 	let size = $derived(images.length ?? 0);
 	let i = $state(0);
+	let direction = $state(1); // 1 = advancing right, -1 = advancing left
+
 	function left() {
+		direction = -1;
 		i = (i - 1 + size) % size;
 	}
 	function right() {
+		direction = 1;
 		i = (i + 1) % size;
 	}
 </script>
@@ -30,12 +36,13 @@
 		<div class="stage">
 			{#if size > 0}
 				{#key i}
-					<img
-						src={images[i]}
-						alt={`Gallery item ${i + 1} of ${size}`}
-						class="imageFill"
-						in:fade={{ duration: 200 }}
-					/>
+					<div
+						class="slide"
+						in:fly={{ x: direction * 60, duration: 280, easing: cubicOut }}
+						out:fly={{ x: direction * -60, duration: 280, easing: cubicOut }}
+					>
+						<img src={images[i]} alt={`Gallery item ${i + 1} of ${size}`} class="imageFill" />
+					</div>
 				{/key}
 			{:else}
 				<p class="empty">Empty gallery.</p>
@@ -62,7 +69,10 @@
 				<button
 					class="dot"
 					class:active={idx === i}
-					onclick={() => (i = idx)}
+					onclick={() => {
+						direction = idx > i ? 1 : -1;
+						i = idx;
+					}}
 					aria-label={`Go to image ${idx + 1}`}
 				></button>
 			{/each}
@@ -96,7 +106,7 @@
 		width: 2.75rem;
 		height: 2.75rem;
 		border-radius: 50%;
-		border: 1px solid var(--border);
+		border: var(--border-width) solid var(--border);
 		background: var(--surface);
 		color: var(--text);
 		cursor: pointer;
@@ -118,12 +128,18 @@
 		cursor: default;
 	}
 	.stage {
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		position: relative;
 		height: var(--gallery-height);
 		min-width: 0;
 		min-height: 0;
+		overflow: hidden;
+	}
+	.slide {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 	.imageFill {
 		display: block;
@@ -131,7 +147,7 @@
 		width: auto;
 		max-width: 100%;
 		object-fit: contain;
-		border: 1px solid var(--border);
+		border: var(--border-width) solid var(--border);
 		border-radius: var(--border-radius);
 		box-sizing: border-box;
 	}
@@ -140,6 +156,7 @@
 		height: var(--gallery-height);
 		display: flex;
 		align-items: center;
+
 		justify-content: center;
 		border: 1px dashed var(--divider);
 		border-radius: var(--border-radius);

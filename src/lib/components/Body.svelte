@@ -1,58 +1,124 @@
 <script>
 	import ImageGallery from './ImageGallery.svelte';
+	import ProjectsTurnstyle from './ProjectsTurnstyle.svelte';
+	import ToolsTurnstyle from './ToolsTurnstyle.svelte';
 
 	import me_piano from '$lib/imgs/IMG_9853.jpg';
 	import color_lab_preview from '$lib/imgs/color_lab_preview.jpg';
 	import ableton_live_preview from '$lib/imgs/ableton_live_preview.jpg';
 	import fw_api_deal from '$lib/imgs/fw_api_deal.jpg';
-	import fw_api_videos from '$lib/imgs/fw_api_videos.jpg';
+	import fw_api_videos from '$lib/imgs/fw_api_deal_2.jpg';
+
+	const COLOR_LAB_LINK = 'example.com';
 </script>
 
 <div class="container">
-	<div class="passage">
+	<section id="top" class="passage">
 		<div class="previewLeftContainer">
 			<div class="previewLeftImage">
-				<img class="imageSmall" src={me_piano} alt="me_piano" />
+				<a href="/resume">
+					<img class="imageSmall" src={me_piano} alt="me_piano" />
+				</a>
 			</div>
 			<div class="previewLeftText">
 				<p>
-					I'm <span class="keyText">Jonathan Bischoff</span>, a frontend engineer from Vanderbilt
+					I'm <a href="/resume">Jonathan Bischoff</a>, a frontend engineer from Vanderbilt
 					University.
 				</p>
 			</div>
 		</div>
-	</div>
+	</section>
 
-	<div class="passage">
+	<section id="projects" class="passageFullWidth">
+		<ProjectsTurnstyle />
+	</section>
+
+	<section id="ethos" class="passage">
+		<h1>Ethos</h1>
+		<p class="headerDivider">
+			<span class="keyText">Pacing</span>
+		</p>
 		<p>
 			I like building workflows that <span class="keyText">quiet the mind</span> and open up
-			<span class="keyText">creative possibilities.</span>
+			<span class="keyText">creative possibilities</span>.
 		</p>
-	</div>
-
-	<div class="passage">
+		<p>The screen should never feel overwhelming.</p>
 		<p>
-			You can ask this bot anything you want to know about me, or continue scrolling to find out.
+			New features should become available to the user <span class="keyText"
+				>as they venture deeper</span
+			> into a specific component.
 		</p>
-	</div>
+		<p style="margin-top: 3rem;">
+			This allows the user to take in information at their own pace, solidifying learning.
+		</p>
+		<p class="headerDivider"><span class="keyText">Modularity</span></p>
+		<p>Each component should function along the <span class="keyText">same design logic</span>.</p>
+		<p>
+			Learning <span class="keyText">one component</span> in-depth should inform the user how they
+			can expect <span class="keyText">future components</span> to work.
+		</p>
+		<p>
+			This requires a standardizing of <span class="keyText">visual language</span>,
+			<span class="keyText">workflows</span>, <span class="keyText">and keywords</span>.
+		</p>
+
+		<p style="margin-top: 3rem;">
+			The result is an application that <span class="keyText">feels good to use</span>, like MacOS,
+			Ableton Live, and Google Workspace.
+		</p>
+
+		<p class="headerDivider"><span class="keyText">Use</span></p>
+		<p>
+			The application should put the user in the <span class="keyText">driver's seat</span>.
+		</p>
+		<p>
+			Internal state should be remembered and manipulated by the <span class="keyText"
+				>application</span
+			>
+			in order to free up the user's <span class="keyText">mental load</span>.
+		</p>
+		<p>
+			Friction should be <span class="keyText">minimal</span> where possible, except for operations
+			with <span class="keyText">big consequences</span> like deleting a database or deploying information
+			to the public. Here, friction is introduced to remind the user of the gravity of their actions.
+		</p>
+		<p style="margin-top: 3rem;">
+			The result is an application that allows the user to enter a <span class="keyText"
+				>flow state</span
+			>
+			so they can focus on what
+			<span class="keyText">actually matters</span>.
+		</p>
+	</section>
+
+	<section id="tools" class="passageFullWidth">
+		<ToolsTurnstyle />
+	</section>
+
+	<!-- end useful part so far -->
 
 	<div class="passage">
 		<div class="previewVerticalContainer">
-			<img class="imageFill" src={color_lab_preview} alt="color_lab_preview.jpg" />
+			<img
+				class="imageFill clickable"
+				src={color_lab_preview}
+				alt="color_lab_preview.jpg"
+				on:click={() => window.open(COLOR_LAB_LINK, '_blank', 'noopener,noreferrer')}
+			/>
 			<div>
 				<p>
-					<a>Color Lab</a> is a browser application that lets you design your website's color scheme and
-					format.
+					<a href={COLOR_LAB_LINK} target="_blank">Color Lab</a> is a browser application that lets you
+					design your website's color scheme and format.
 				</p>
 				<p>
-					You can select an image to extract its colors, and use a picker to dial with more
-					precision.
-				</p>
-				<p>It exports raw .css, so you can copy definitions directly into your code.</p>
-				<p>
-					It also displays contrast ratios between colors so you can design readable, accessible
+					It displays contrast ratios between colors so you can design readable, accessible
 					applications.
 				</p>
+				<p>
+					You can select an image to extract its colorscheme for your website, or use a picker to
+					dial with more precision.
+				</p>
+				<p>It exports raw .css, so you can copy definitions directly into your code.</p>
 			</div>
 		</div>
 	</div>
@@ -103,11 +169,15 @@
 	</div>
 
 	<div class="passage">
-		<p>
-			My favorite software to use is <span class="keyText">Ableton Live</span>.
-			<span class="moreDetails">why?</span>
-			<!-- opens up './expand/AbletonLive.svelte' -->
-		</p>
+		<div class="previewVerticalContainer">
+			<img class="imageFill" src={ableton_live_preview} alt="ableton_live_preview.jpg" />
+
+			<p>
+				My favorite software to use is <span class="keyText">Ableton Live</span>.
+				<span class="moreDetails">why?</span>
+				<!-- opens up './expand/AbletonLive.svelte' -->
+			</p>
+		</div>
 	</div>
 
 	<div class="passage">
@@ -137,13 +207,33 @@
 	</div>
 
 	<div class="passage">
-		<p>I am also competent with the following tools:</p>
+		<p>I'm also familiar with the following tools:</p>
 		<ul>
 			<li>Python</li>
 			<li>C++</li>
 			<li>SQL (with Supabase)</li>
 		</ul>
 	</div>
+
+	<div class="passage">
+		<h2>Learning Journey</h2>
+		<p>
+			In the past year, I learned to build websites using raw HTML and JavaScript before scaling
+			into JS frameworks like Svelte and React.
+		</p>
+		<p>
+			I built an entire music player and file-sharing app in raw HTML using a Google Sheets database
+			as the backend. It works.
+		</p>
+	</div>
+</div>
+
+<div class="passage">
+	Todo:
+	<p>Wire up all links (no dead links)</p>
+	<p>allow test driving all apps</p>
+	<p>write "learning journey" page and "disclaimer"</p>
+	<p>write generic site-monitoring statistics, like, your javascript watcher</p>
 </div>
 
 <style>
@@ -151,10 +241,10 @@
 		max-width: 50vw;
 		margin-inline: auto;
 		height: 100%;
-		padding: 1rem;
-		background: var(--bg);
+		padding: var(--padding);
+		background: transparent;
 		color: var(--text);
-		border: none /* 2px solid black; */
+		border: none; /* 2px solid black; */
 		border-radius: 0;
 		overflow: hidden;
 
@@ -165,23 +255,113 @@
 		align-items: center;
 	}
 
-	h3 {
+	h3,
+	h2 {
 		text-align: center;
+	}
+
+	.headerDivider {
+		margin-top: 3rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid var(--divider);
 	}
 
 	.passage {
 		background-color: var(--surface);
 		margin-top: 3rem;
-		margin-bottom: 2rem;
+		margin-bottom: 60vh;
 		padding: 1.5rem;
-		border: 2px solid var(--border);
+		border: var(--border-width) solid var(--border);
 		border-radius: var(--border-radius);
+
+		:global([data-theme='light']) & {
+			box-shadow: 2px 3px;
+		}
+
+		:global([data-theme='frutiger']) & {
+			background-image: linear-gradient(
+				to bottom,
+				rgba(255, 255, 255, 0.32) 0%,
+				rgba(255, 255, 255, 0.18) 25%,
+				rgba(255, 255, 255, 0.04) 70%,
+				rgba(255, 255, 255, 0.14) 100%
+			);
+			box-shadow:
+				inset 0 1px 0 rgba(255, 255, 255, 0.7),
+				0 2px 8px rgba(0, 40, 70, 0.35);
+			backdrop-filter: blur(10px) saturate(1.4);
+		}
+	}
+	.passageFullWidth {
+		background-color: var(--surface);
+		margin-top: 3rem;
+		margin-bottom: 60vh;
+		padding: 1.5rem;
+		border: var(--border-width) solid var(--border);
+		border-radius: var(--border-radius);
+		align-self: stretch;
+
+		:global([data-theme='light']) & {
+			box-shadow: 2px 3px;
+		}
+
+		:global([data-theme='frutiger']) & {
+			background-image: linear-gradient(
+				to bottom,
+				rgba(255, 255, 255, 0.32) 0%,
+				rgba(255, 255, 255, 0.18) 25%,
+				rgba(255, 255, 255, 0.04) 70%,
+				rgba(255, 255, 255, 0.14) 100%
+			);
+			box-shadow:
+				inset 0 1px 0 rgba(255, 255, 255, 0.7),
+				0 2px 8px rgba(0, 40, 70, 0.35);
+			backdrop-filter: blur(10px) saturate(1.4);
+		}
+	}
+
+	.subdivider {
+		margin: 2.5rem 0 1rem;
+		font-family: var(--font-mono);
+		font-size: 1rem;
+		font-weight: 500;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+		padding-bottom: 0.6rem;
+		border-bottom: 1px solid var(--divider);
+	}
+
+	.glide {
+		animation: glide-fade linear both;
+		animation-timeline: view();
+		animation-range: cover 0% cover 100%;
+	}
+
+	@keyframes glide-fade {
+		0% {
+			opacity: 0;
+		} /* bottom edge of viewport */
+		10% {
+			opacity: 1;
+		} /* 10% into view */
+		90% {
+			opacity: 1;
+		} /* start of top 10% */
+		100% {
+			opacity: 0;
+		} /* top edge of viewport */
 	}
 
 	.keyText {
-		color: var(--primary-hover);
+		color: var(--text);
 		font-weight: bold;
+		transition:
+			color var(--transition-time) ease,
+			border-color var(--transition-time) ease,
+			background-color var(--transition-time) ease;
 	}
+
 	.moreDetails {
 		color: var(--secondary);
 		font-weight: bold;
@@ -197,8 +377,13 @@
 		padding-right: 1rem;
 		border-right: 2px solid var(--border);
 	}
+
 	.previewLeftText {
 		align-content: center;
+	}
+
+	.clickable {
+		cursor: pointer;
 	}
 
 	.imageSmall {
@@ -208,7 +393,7 @@
 		width: auto;
 		max-width: 80%;
 		margin: 4rem;
-		border: 2px solid var(--border);
+		border: var(--border-width) solid var(--border);
 		border-radius: var(--border-radius);
 		overflow: hidden;
 	}
@@ -220,5 +405,9 @@
 
 		align-items: center;
 		justify-content: center;
+	}
+
+	.todo {
+		font-weight: 400;
 	}
 </style>
