@@ -38,7 +38,7 @@
 			subtitle:
 				'Upload music and listen to custom playlists, built in vanilla HTML and JS, using an AWS Bucket for storage, and Google Sheets for a database!',
 			image: album_board,
-			href: 'warning-you-must-make-a-dummy-version-the-job-guys-can-use',
+			href: '/album',
 			completed: 'Jan 27 2026'
 		},
 		{

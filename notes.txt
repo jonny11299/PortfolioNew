@@ -3,6 +3,7 @@
 
 
 8/4/26: Build works.
+- github too big, look into it.
 - Add the dashboard project
 - Finish the form for contacting you
 - Launch to your site. Migrate old stuff elsewhere. ("old" folder?)

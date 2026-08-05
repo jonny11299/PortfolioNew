@@ -6,6 +6,8 @@ let filledMapIframe;
 let loadingEmptyMap = true;
 let loadingFilledMap = true;
 
+let filled_src = '/fish_app/fish_map.min.html';
+
 let momentLoaded = Date.now();
 
 function preload() {
@@ -26,7 +28,7 @@ function preload() {
 
 	// Create iframe element
 	filledMapIframe = createElement('iframe', '');
-	filledMapIframe.attribute('src', '/fish_app/fish_map.html');
+	filledMapIframe.attribute('src', filled_src);
 
 	// Position and style it
 	filledMapIframe.position(width * 0.1, height * 0.1);

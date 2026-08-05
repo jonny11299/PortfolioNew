@@ -1,0 +1,217 @@
+
+
+
+Bucket name:
+faunix-objects
+
+
+
+Allowed origins:
+http://127.0.0.1:5500/
+https://bischoffportfolio.com/
+
+
+
+
+
+Authenticating access to bucket:
+(https://claude.ai/chat/4512b309-03d7-43c8-b511-579d2c995a07)
+Here's the flow:
+User visits site, gets/has their UID from localStorage
+Site sends UID to your Lambda function
+Lambda checks UID against approved list
+If approved, Lambda returns a presigned S3 upload URL
+Browser uploads directly to S3
+
+
+Lambda:
+lambda_uid_verify:
+/index.mjs
+/lambda_func.ts
+arn:aws:lambda:us-west-2:509726420864:function:lambda_uid_verify
+
+
+API Gateway:
+api_faunix_bucket:
+
+Invoke URL:
+https://s6lwojpyb8.execute-api.us-west-2.amazonaws.com
+https://s6lwojpyb8.execute-api.us-west-2.amazonaws.com/upload
+
+
+
+
+
+
+Test:
+
+fetch('https://s6lwojpyb8.execute-api.us-west-2.amazonaws.com/upload', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+        uid: getUserID(),
+        filename: 'test.mp3' 
+    })
+})
+.then(r => r.json())
+.then(data => {
+    console.log('Response:', data);
+    if (data.uploadUrl) {
+        console.log('Success! Got presigned URL');
+    }
+})
+.catch(err => console.error('Error:', err))
+
+
+
+
+
+
+// My consts to keep:
+
+  const APPROVED_UIDS = [
+      'user_jonny_1234567890',
+      'user_bandmate1_1234567891',
+      'user_bandmate2_1234567892',
+      'user_Casting Deity_1766295218453'
+      // Add UIDs as you get them
+  ];
+
+
+
+
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+const s3Client = new S3Client({ region: "us-west-2" });
+
+// Your approved UIDs - add your real UIDs here
+const APPROVED_UIDS = [
+    'user_jonny_1234567890',
+    'user_bandmate1_1234567891',
+    'user_bandmate2_1234567892',
+    // Add UIDs as you get them
+];
+
+
+export const handler = async (event) => {
+    console.log('Event:', JSON.stringify(event));
+    
+    // Parse request body
+    let body;
+    try {
+        body = JSON.parse(event.body || '{}');
+    } catch (e) {
+        return {
+            statusCode: 400,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            },
+            body: JSON.stringify({ error: 'Invalid JSON' })
+        };
+    }
+    
+    const { uid, filename } = body;
+    
+    // Check if UID is approved
+    if (!APPROVED_UIDS.includes(uid)) {
+        return {
+            statusCode: 403,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            },
+            body: JSON.stringify({ error: 'Unauthorized UID' })
+        };
+    }
+    
+    // Generate presigned URL
+    try {
+        const key = `uploads/${uid}/${Date.now()}_${filename}`;
+        const command = new PutObjectCommand({
+            Bucket: 'faunix-objects',  // CHANGE THIS
+            Key: key,
+            ContentType: 'audio/mpeg'
+        });
+        
+        const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 600 });
+        
+        return {
+            statusCode: 200,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            },
+            body: JSON.stringify({ uploadUrl, key })
+        };
+    } catch (error) {
+        console.error('S3 Error:', error);
+        return {
+            statusCode: 500,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            },
+            body: JSON.stringify({ error: 'Failed to generate upload URL' })
+        };
+    }
+};
+
+
+
+
+
+// Old code:
+export const handler = async (event) => {
+    // Lambda function code
+  import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+  import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+  const s3Client = new S3Client({ region: "us-west-2" });
+
+  // Your approved UIDs
+  const APPROVED_UIDS = [
+      'user_jonny_1234567890',
+      'user_bandmate1_1234567891',
+      'user_bandmate2_1234567892',
+      // Add UIDs as you get them
+  ];
+
+  export const handler = async (event) => {
+      const body = JSON.parse(event.body);
+      const { uid, filename } = body;
+      
+      // Check if UID is approved
+      return {
+          statusCode: 403,
+          headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Headers': 'Content-Type'
+          },
+          body: JSON.stringify({ error: 'Unauthorized', reason: 'User ID does not match approved UIDs.' })
+      };
+      
+      // Generate presigned URL
+      const key = `uploads/${uid}/${Date.now()}_${filename}`;
+      const command = new PutObjectCommand({
+          Bucket: 'faunix-objects',
+          Key: key,
+          ContentType: 'audio/mpeg' // adjust as needed
+      });
+      
+      const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 600 }); // 10 min
+      
+      return {
+          statusCode: 200,
+          headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Headers': 'Content-Type',
+              'Access-Control-Allow-Methods': 'POST, OPTIONS'
+          },
+          body: JSON.stringify({ uploadUrl, key })
+      };
+  };
+};
+
+

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Faunix Album 2</title>
+    <link rel="stylesheet" href="/pages/hidden/faunix/styles.css" />
+
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/pages/hidden/faunix/imgs/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/pages/hidden/faunix/imgs/favicon-16x16.png">
+
+
+    <script src="/pages/hidden/faunix/js/standardFunctions.js"></script>
+    <script src="/pages/hidden/faunix/js/postman.js"></script>
+    <script src="/pages/hidden/faunix/js/handshake.js"></script>
+</head>
+
+<body data-page="home">
+    <!-- NAV sits at the top  (or at least... it USED to)
+  <div data-include="/pages/hidden/faunix/partials/nav.html"></div>-->
+
+    <!-- Main centered content -->
+    <div class="page-wrapper">
+        <div class="scaled-content">
+
+            <main class="container">
+                <section class="section">
+
+                    <!--
+          <div style="display:inline-block; margin-bottom:0px; padding:0; border:0;">
+            <img src="/pages/hidden/faunix/imgs/logo.png" alt="Some logo"
+              style="display:block; margin:0; margin-bottom:2px; padding:0; padding-bottom:2px; border:0; color: #ffffff;">
+          </div>
+-->
+
+
+                    <header>
+                        <p></p>
+                        <h1>Random Biz:</h1>
+                    </header>
+
+                    <!-- Add "Submit new links:"-->
+
+
+
+
+                    <ul>
+                        <li>
+                            <button id="faunixian_name" onclick="giveRandomFaunixianName()">Give me a random Faunixian
+                                name</button>
+                        </li>
+                        <li><br></li>
+                        <li>
+                            <h3 id="msg" style="color: greenyellow"></h3>
+                        </li>
+                        <li><br></li>
+                        <li>
+                            <a href="/pages/hidden/faunix/pages/ledger.html">See Ledger</a>
+                        </li>
+                        <li><br><br></li>
+                        <p>If you have any ideas for cool Faunixian names, (first or last, or both),
+                            I encourage you to write them in a journal, then send them to me via the <a
+                                href="/pages/hidden/faunix/pages/featureRequest.html">feature request form</a> :)</p>
+                    </ul>
+
+
+
+
+                    <script>
+                        function giveRandomFaunixianName() {
+                            const name = getFaunixName();
+
+                            const msg = document.getElementById('msg');
+                            msg.innerText = name;
+                        }
+                    </script>
+
+
+
+
+
+
+
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer sits at the bottom -->
+    <div data-include="/pages/hidden/faunix/partials/footer.html"></div>
+
+    <script src="/pages/hidden/faunix/js/include.js"></script>
+</body>
+
+</html>

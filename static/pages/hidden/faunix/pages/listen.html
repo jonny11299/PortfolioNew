@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Faunix Album 2</title>
+    <link rel="stylesheet" href="/pages/hidden/faunix/styles.css" />
+
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/pages/hidden/faunix/imgs/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/pages/hidden/faunix/imgs/favicon-16x16.png">
+
+    <script src="/pages/hidden/faunix/js/standardFunctions.js"></script>
+    <script src="/pages/hidden/faunix/js/postman.js"></script>
+    <script src="/pages/hidden/faunix/js/handshake.js"></script>
+</head>
+
+<body data-page="home">
+    <!-- NAV sits at the top  (or at least... it USED to)
+  <div data-include="/pages/hidden/faunix/partials/nav.html"></div>-->
+
+    <!-- Main centered content -->
+    <div class="page-wrapper">
+        <div class="scaled-content">
+
+            <main class="container">
+                <section class="section">
+
+                    <!--
+          <div style="display:inline-block; margin-bottom:0px; padding:0; border:0;">
+            <img src="/pages/hidden/faunix/imgs/logo.png" alt="Some logo"
+              style="display:block; margin:0; margin-bottom:2px; padding:0; padding-bottom:2px; border:0; color: #ffffff;">
+          </div>
+
+
+
+          Bugs to fix:
+          play/pause button doesn't change if I pause from the element itself
+          ^ FIXED: native 'play'/'pause' listeners now sync the button (see reflectPlayState)
+-->
+
+
+                    <header>
+                        <p></p>
+                        <h1>Listen:</h1>
+                    </header>
+
+                    <!-- Add "Submit new links:"-->
+
+                    <ul>
+                        <li>
+                            <h2>Select an Album Order</h2>
+                        </li>
+                        <li>
+                            <h3>or, <a href="order.html">create a new one</a></h3>
+                        </li>
+                        <li>
+                            <select id="album_order_select"></select>
+                        </li>
+                        <li>
+                            <button id='start_album_order_button'>Start selected album order</button>
+                        </li>
+                    </ul>
+
+
+
+
+                    <!-- Build out a player, get the individual song playing -->
+                    <!--
+                        Album Order name
+                        Song name
+                        Version name
+                        [song]
+                        autoplay (default on)
+                        <- last .(play/pause). -> next
+                        ------
+                        notes
+                    
+                    
+                    
+                    
+                     -->
+
+
+                    <ul id='playerList'>
+                        <li id="status"></li>
+                        <li id='albumordername'></li>
+                        <li id='songname'></li>
+                        <li id='versionname'></li>
+                        <li id='player'></li>
+                        <li id="autoplay"></li>
+                        <li id="navlistcontainer">
+                            <ul id='navlist' class="horizontal">
+                                <li id='prev'></li>
+                                <li id='playpause'></li>
+                                <li id='next'></li>
+                            </ul>
+                        </li>
+                        <li id="spacing"><br></li>
+                        <li id="leaveNotesButton"></li>
+                        <li><br><br><br></li>
+                        <li>
+                            <ul id="notesList">
+                                <!-- empty now, will be filled -->
+                            </ul>
+                        </li>
+                    </ul>
+                    <br>
+                    <br>
+                    <br>
+
+
+
+
+
+                    <script>
+
+                        function printAlbumOrders() {
+                            console.log(getFaunixAlbumOrders());
+                        }
+
+                        /*
+
+                        let settings = {
+                            status: 'not_playing',
+                            album_order_name: 'none',
+                            song_name: 'none',
+                            version_name: 'none',
+                            autoplay: true,
+                            playing: false
+                        }
+
+                        */
+
+                        // trying to pass in a function to mod the child before appending, with default behavior...
+                        let giveChild = (e, childType, textContent, modChild = (c) => { }) => {
+                            e.innerHTML = ''
+                            const c = document.createElement(childType);
+                            c.textContent = textContent;
+                            modChild(c);
+                            e.appendChild(c);
+                        }
+
+                        // actually completely insert a different, pre-made child into this element
+                        // it's fine if it doesn't already have a child.
+                        let replaceChild = (e, newChild) => {
+                            e.innerHTML = '';
+                            e.appendChild(newChild);
+                        }
+
+
+                        // sets up the player html to run a particular version
+                        function syncPlayerWithSettings() {
+                            const albumordername = document.getElementById('albumordername');
+                            const songname = document.getElementById('songname');
+                            const versionname = document.getElementById('versionname');
+                            // const player = document.getElementById('player');
+                            const autoplay = document.getElementById('autoplay');
+                            const status = document.getElementById('status');
+                            // const navlistcontainer = document.getElementById('navlistcontainer');
+                            // const navlist = document.getElementById('navlist');
+                            const prev = document.getElementById('prev');
+                            const playpause = document.getElementById('playpause');
+                            const next = document.getElementById('next');
+                            // const spacing = document.getElementById('spacing');
+                            const leave_Notes_LI = document.getElementById('leaveNotesButton');
+
+
+
+                            // Okay, I'm getting cool ideas here.
+                            // These should use my button element from before, and clicking on each should do something.
+                            // Clicking on album version should take me to a list of the song order, details about it, etc.
+                            // Clicking on songname should show me all the other versions for it.
+                            // clicking on version name should bring me to its location in the google drive.
+                            // 
+                            // giveChild(status, 'h4', `status: ${settings.status}`);
+
+                            giveChild(albumordername, 'h2', `playing Album Order ${settings.album_order_name}\n
+                            song ${curSong.order} / ${settings.albumOrder.songs.length}`, (c) => {
+                                c.style = 'color: white';
+                            });
+                            giveChild(songname, 'h3', `song name: ${settings.version.song_name}`);
+                            giveChild(versionname, 'h4', `version name: ${settings.version.version_name}`);
+
+
+                            giveChild(prev, 'button', '<--', (c) => {
+                                c.onclick = prevSong;
+                            });
+
+                            const ppt = settings.playing ? 'pause' : 'play';
+                            giveChild(playpause, 'button', ppt, (c) => {
+                                c.onclick = playOrPause;
+                            });
+                            giveChild(next, 'button', '-->', (c) => {
+                                c.onclick = nextSong;
+                            });
+
+
+                            giveChild(leave_Notes_LI, 'button', 'Leave Note', (c) => {
+                                setupNotesButton(c);
+                            });
+
+                            autoplayText = settings.autoplay ? 'disable autoplay' : 'enable autoplay';
+                            giveChild(autoplay, 'button', autoplayText, (c) => {
+                                c.onclick = toggleAutoplay
+                            })
+                        }
+
+                        function setupNotesButton(buttonObj) {
+
+                            notesButton = buttonObj;
+                            const nb = notesButton;
+                            nb.style = "color: green";
+                            // nb.textContent = 'leave note';
+                            // actually the rest is done in stuffWithEventListeners, really, so...
+                        }
+
+
+
+                        // comes from the button created by leaveNote
+
+                        function submitNote(formId, song, timeInSong, albumOrder) {
+
+                            try {
+                                const form = document.getElementById(formId);
+                                const t = form.value.trim()
+
+                                //console.log("Submitting note for:");
+                                //console.log(formId);
+                                //console.log(t);
+                                //console.log(song);
+                                //console.log(time);
+                                //console.log(albumOrder);
+                                postSongNote(t, song, timeInSong, albumOrder);
+                                // it's in postman.js
+
+                                form.parentElement.parentElement.remove();
+
+
+                            } catch (error) {
+                                console.error(`Failed to submit note for ${formId}, ${song}`);
+                                console.log(error);
+                            }
+
+
+                            // only if noteslist is empty
+                            const noteslist = document.getElementById('notesList');
+                            const childCount = notesList.children.length;
+                            console.log("noteslist child count " + childCount);
+                            settings.autoplay = settings.returnToAutoPlay;
+                        }
+
+                        // yeah dude
+                        // every time this happens, I create a new form with the right stuff
+                        // you can have multiple notes up, they just get appended to notesList
+                        // and removed once notesList is submitted
+
+                        function leaveNote(song, time, albumOrder) {
+                            console.log("leaving a note on " + song.name + " at " + time);
+                            // console.log(song);
+                            // console.log(albumOrder);
+
+                            // disable autoplay until submitNote
+                            // perhaps add a setting to make it default pause when leaving notes, or not.
+
+                            settings.returnToAutoPlay = settings.autoplay;
+                            settings.autoplay = false;
+
+                            // create the note form:
+                            const formlist = document.createElement('ul');
+
+                            const form = document.createElement('form');
+                            const li1 = document.createElement('li');
+                            li1.appendChild(form);
+                            formlist.appendChild(li1);
+
+                            const textArea = document.createElement('textarea');
+                            const tid = `notesText_${Date.now()}`;
+                            textArea.id = tid;
+                            textArea.rows = "10";
+                            textArea.cols = "50";
+                            textArea.placeholder = "Enter your notes here...\nLeave this form blank and submit it to cancel.";
+                            const li2 = document.createElement('li');
+                            li2.appendChild(textArea)
+                            formlist.appendChild(li2);
+
+
+                            const submitButton = document.createElement('button');
+                            submitButton.textContent = `submit above note for ${song.name} at ${formatTime(time)}`;
+                            submitButton.onclick = () => submitNote(tid, song, time, albumOrder);
+
+                            const li3 = document.createElement('li');
+                            li3.appendChild(submitButton);
+                            formlist.appendChild(li3);
+
+
+                            const notesList = document.getElementById('notesList');
+                            notesList.appendChild(formlist);
+
+
+
+                        }
+
+
+                        function toggleAutoplay() {
+                            settings.autoplay = !settings.autoplay;
+
+                            const autplay = document.getElementById('autoplay');
+                            try {
+                                const c = autplay.children[0];
+                                c.textContent = settings.autoplay ? 'disable autoplay' : 'enable autoplay';
+                            } catch (error) {
+                                console.log("Probably don't have a child on autoplay element yet.");
+                            }
+                        }
+
+                        // NEW: single place that reflects the current play/pause state into
+                        // (a) the on-page play/pause button and (b) the OS lock-screen state.
+                        // Called by the audio element's native 'play'/'pause' events, so it
+                        // stays correct no matter WHERE the pause came from: our button, the
+                        // <audio> controls, the lock screen, or headphone buttons.
+                        function reflectPlayState() {
+                            const playpause = document.getElementById('playpause');
+                            try {
+                                const c = playpause.children[0];
+                                if (c) c.textContent = settings.playing ? 'pause' : 'play';
+                            } catch (error) {
+                                console.log("Probably don't have a child on playpause element yet.");
+                            }
+                            if ('mediaSession' in navigator) {
+                                navigator.mediaSession.playbackState = settings.playing ? 'playing' : 'paused';
+                            }
+                        }
+
+                        function playOrPause() {
+                            const a = settings.audioComponent;
+
+                            if (settings.playing) {
+                                console.log("Paused");
+                                settings.playing = false;
+                                if (a) {
+                                    a.pause();
+                                }
+                            } else {
+                                console.log("Played");
+                                settings.playing = true;
+                                if (a) {
+                                    a.play();
+                                }
+                            }
+
+                            // CHANGED: button text is now handled by reflectPlayState (fired via the
+                            // audio element's native events), but we call it here too so a click with
+                            // no audio element yet still updates immediately.
+                            reflectPlayState();
+                            // console.log(playpause.children[0].textContent);
+                        }
+
+                        function nextSong() {
+                            if (curSong !== null) {
+                                // reminder that order is 1-indexed
+                                const nextIndex = curSong.order;
+                                if (nextIndex === settings.albumOrder.songs.length) return;
+                                launchSong(settings.albumOrder.songs[nextIndex]);
+                            }
+                        }
+
+                        function prevSong() {
+                            if (curSong !== null) {
+                                // reminder that order is 1-indexed
+                                const prevIndex = curSong.order - 2;
+                                if (prevIndex === -1) return;
+                                launchSong(settings.albumOrder.songs[prevIndex]);
+                            }
+                        }
+
+
+                        // okay, we need to be able to take the above, and get:
+                        // 1. Listen to it
+                        // 2. Leave notes on it
+                        // 3. Go to the location of the file (via drive name --> url)
+
+                        function setHtmlElements() {
+
+                            /*
+                            // Set delete dropdown:
+                            const indivSelect = document.getElementById('listen_individual_select');
+                            indivSelect.innerHTML = '';
+
+                            // Add a default/placeholder option
+                            const defaultOption3 = document.createElement('option');
+                            defaultOption3.value = '';
+                            defaultOption3.textContent = '-- Select a Version to Listen To --';
+                            defaultOption3.disabled = true;
+                            defaultOption3.selected = true;
+                            indivSelect.appendChild(defaultOption3);
+
+                            let versionsList = getVersionsFromLocalStorage();
+                            console.log(versionsList);
+
+                            for (let v of versionsList) {
+                                const option = document.createElement('option');
+                                option.value = JSON.stringify(v); // Keeping the whole object here
+                                option.textContent = v.song_name + ": " + v.version_name;
+
+                                indivSelect.appendChild(option);
+                            }
+                            */
+
+
+
+
+                            // Select album orders from the dropdown:
+
+                            const aoselect = document.getElementById("album_order_select");
+                            aoselect.innerHTML = '';
+
+                            const doption = document.createElement('option');
+                            doption.value = '';
+                            doption.textContent = '-- Select an Album Order to Listen To --';
+                            doption.disabled = true;
+                            doption.selected = true;
+                            aoselect.appendChild(doption);
+
+
+                            const aorders = getFaunixAlbumOrders();
+                            console.log("Getting album orders:");
+                            console.log(aorders);
+                            for (let ao of aorders) {
+                                const aoption = document.createElement('option');
+                                aoption.value = JSON.stringify(ao);
+                                let aoname = ao.album_order_name;
+                                aoption.textContent = aoname
+
+                                aoselect.appendChild(aoption);
+
+                                /*
+                                // console.log(ao);
+                                let blanknum = ao.songs.reduce((num, s) => {
+                                    if (s.version === 'blank') {
+                                        num++;
+                                    }
+                                    return num;
+                                }, 0);
+                                let fillednum = ao.songs.length - blanknum;
+
+                                const previewstring = `${ao.album_order_name} | (${fillednum} filled, ${blanknum} blank)`;
+                                // console.log(previewstring);
+
+                                let button = document.createElement('button');
+                                button.textContent = previewstring;
+                                button.value = JSON.stringify(ao);
+                                button.onclick = () => startAlbumOrder(ao);
+                                // console.log(button.value);
+
+                                const li = document.createElement('li');
+                                li.class = "songSelect";
+                                li.appendChild(button);
+                                alist.appendChild(li);
+
+                                */
+
+                                document.getElementById('start_album_order_button').onclick = startAlbumOrderViaSelect;
+
+                            }
+
+                            function startAlbumOrderViaSelect() {
+                                // just need to do a normal if/then here...
+                                const aostring = document.getElementById('album_order_select').value;
+                                if (aostring.length === 0) {
+                                    console.log("Haven't selected anything. Can't play.");
+                                } else {
+                                    const ao = JSON.parse(aostring);
+                                    console.log(ao);
+                                    startAlbumOrder(ao);
+                                }
+                            }
+
+
+                            /*
+                            const alist = document.getElementById('album_order_list');
+                            alist.innerHTML = '';
+                            const aorders = getFaunixAlbumOrders();
+                            console.log("Getting album orders:");
+                            console.log(aorders);
+                            for (let ao of aorders) {
+                                // console.log(ao);
+                                let aoname = ao.album_order_name;
+                                let blanknum = ao.songs.reduce((num, s) => {
+                                    if (s.version === 'blank') {
+                                        num++;
+                                    }
+                                    return num;
+                                }, 0);
+                                let fillednum = ao.songs.length - blanknum;
+
+                                const previewstring = `${ao.album_order_name} | (${fillednum} filled, ${blanknum} blank)`;
+                                // console.log(previewstring);
+
+                                let button = document.createElement('button');
+                                button.textContent = previewstring;
+                                button.value = JSON.stringify(ao);
+                                button.onclick = () => startAlbumOrder(ao);
+                                // console.log(button.value);
+
+                                const li = document.createElement('li');
+                                li.class = "songSelect";
+                                li.appendChild(button);
+                                alist.appendChild(li);
+                            }
+                                */
+
+
+                        }
+
+                        function formatTime(seconds) {
+                            const mins = Math.floor(seconds / 60);
+                            const secs = Math.floor(seconds % 60);
+                            return `${mins}:${secs.toString().padStart(2, '0')}`;
+                        }
+
+
+                        // CHANGED: this now runs ONCE (from getOrCreateAudio), not per-song.
+                        // The 'ended' handler is debounced, and we added native 'play'/'pause'
+                        // listeners so the UI + lock screen stay in sync with the real element.
+                        function stuffWithEventListeners(audio) {
+
+                            audio.addEventListener('timeupdate', () => {
+                                // Fires constantly as song plays - perfect for progress bars!
+                                // console.log(formatTime(audio.currentTime));
+
+                                try {
+                                    curtime = formatTime(audio.currentTime);
+                                    if (notesButton) {
+
+                                        const notesList = document.getElementById('notesList');
+                                        const childCount = notesList.children.length;
+
+                                        if (childCount > 0) {
+                                            notesButton.textContent = `Leave additional note at ${curtime}`;
+                                        } else {
+                                            notesButton.textContent = `Leave note at ${curtime}`;
+                                        }
+
+
+                                        notesButton.onclick = () => leaveNote(curSong, audio.currentTime, settings.albumOrder);
+                                    }
+                                } catch (error) {
+                                    console.log("Error with notesButton ");
+                                    console.log(error);
+                                }
+                            });
+
+                            // CHANGED: debounced 'ended'.
+                            // iOS throttles JS while the screen is locked and QUEUES the 'ended'
+                            // event, sometimes delivering a stale duplicate when you reopen the
+                            // page -> that was the "it skipped a song" bug. We advance at most
+                            // once per ~1.5s. (settings.lastAdvance is also stamped in launchSong,
+                            // so a stale 'ended' right after a manual skip is ignored too.)
+                            audio.addEventListener('ended', () => {
+                                if (!settings.autoplay) return;
+
+                                const now = Date.now();
+                                if (now - (settings.lastAdvance || 0) < 1500) {
+                                    console.log("Ignoring duplicate 'ended' (debounced).");
+                                    return;
+                                }
+                                settings.lastAdvance = now;
+                                nextSong();
+                            });
+
+                            // NEW: keep our state honest no matter who paused/played the audio
+                            // (our button, the <audio> controls, or the lock-screen buttons).
+                            audio.addEventListener('play', () => {
+                                settings.playing = true;
+                                reflectPlayState();
+                            });
+                            audio.addEventListener('pause', () => {
+                                settings.playing = false;
+                                reflectPlayState();
+                            });
+
+                            audio.addEventListener('loadedmetadata', () => {
+                                // Duration is now available
+                                console.log('Song length:', audio.duration);
+                            });
+
+
+
+                            /*
+                            Hell yeah, the <audio> element is packed with useful stuff! Here's what you can grab:
+                                Time & Playback
+                                javascript
+                                audio.duration         // Total length in seconds (e.g., 245.5)
+                                audio.currentTime      // Current position in seconds (e.g., 67.3)
+                                audio.paused           // Boolean - is it paused?
+                                audio.ended            // Boolean - has it finished?
+                                audio.playbackRate     // Playback speed (1.0 = normal, 2.0 = 2x speed)
+                                Volume & Audio
+                                javascript
+                                audio.volume           // 0.0 to 1.0
+                                audio.muted            // Boolean - is it muted?
+                                Loading State
+                                javascriptaudio.readyState       // 0-4, how much has loaded
+                                audio.buffered         // TimeRanges object of buffered portions
+                                audio.seeking          // Boolean - currently seeking?
+                                Useful Methods
+                                javascriptaudio.play()           // Returns a Promise!
+                                audio.pause()
+                                audio.load()           // Reload the audio
+                                Practical Example:
+                                javascriptconst audio = settings.audioComponent;
+
+                                // Get progress as percentage
+                                const progress = (audio.currentTime / audio.duration) * 100;
+
+                                // Jump to 30 seconds in
+                                audio.currentTime = 30;
+
+                                // Check if almost done
+                                if (audio.duration - audio.currentTime < 10) {
+                                    console.log("Less than 10 seconds left!");
+                                }
+
+                                // Format time nicely
+                                function formatTime(seconds) {
+                                    const mins = Math.floor(seconds / 60);
+                                    const secs = Math.floor(seconds % 60);
+                                    return `${mins}:${secs.toString().padStart(2, '0')}`;
+                                }
+
+                                console.log(formatTime(audio.currentTime)); // "2:47"
+                                */
+
+                        }
+
+
+                        // NEW: create the ONE <audio> element and reuse it for the whole album.
+                        // The original code built a brand-new <audio> in every launchSong(). On
+                        // iOS, only an element whose playback was started by a real tap keeps its
+                        // background "audio session." A fresh element created while the phone is
+                        // locked has no session, so it silently refuses to start the next song --
+                        // that was the core reason autoplay died on a locked screen. By reusing
+                        // the element that the first "Start album order" tap unlocked, the session
+                        // survives across the whole album, so end-of-song advances keep working
+                        // even with the screen off.
+                        function getOrCreateAudio() {
+                            if (settings.audioComponent) return settings.audioComponent;
+
+                            const audio = document.createElement('audio');
+                            audio.controls = true; // show play/pause controls
+
+                            // Fallback if a source fails, guarded so it can't loop on itself.
+                            audio.addEventListener('error', () => {
+                                if (!audio.src || audio.src.indexOf('womp.m4a') !== -1) return;
+                                console.error("Audio failed to load:", audio.src);
+                                audio.src = '/pages/hidden/faunix/audios/womp.m4a';
+                                audio.load(); // Important! Forces reload with new src
+                                audio.play().catch(err => console.log('Even the womp womp failed!'));
+                            }, true);
+
+                            // Attach the persistent listeners EXACTLY ONCE.
+                            stuffWithEventListeners(audio);
+
+                            settings.audioComponent = audio;
+                            return audio;
+                        }
+
+
+                        // NEW: tell the OS what's playing so the lock-screen controls drive our
+                        // own next/prev/play/pause. This is also why the metadata on the lock
+                        // screen shows the right song/version.
+                        function updateMediaSession(song) {
+                            if (!('mediaSession' in navigator)) return;
+                            try {
+                                navigator.mediaSession.metadata = new MediaMetadata({
+                                    title: song.version.song_name || song.name || 'Unknown',
+                                    artist: song.version.version_name || '',
+                                    album: settings.album_order_name || 'Faunix'
+                                    // artwork: [{ src: '/pages/hidden/faunix/imgs/logo.png',
+                                    //             sizes: '512x512', type: 'image/png' }]
+                                });
+
+                                navigator.mediaSession.setActionHandler('play', () => {
+                                    if (settings.audioComponent) settings.audioComponent.play();
+                                    // settings.playing + button handled by the native 'play' event
+                                });
+                                navigator.mediaSession.setActionHandler('pause', () => {
+                                    if (settings.audioComponent) settings.audioComponent.pause();
+                                    // settings.playing + button handled by the native 'pause' event
+                                });
+                                navigator.mediaSession.setActionHandler('nexttrack', nextSong);
+                                navigator.mediaSession.setActionHandler('previoustrack', prevSong);
+                            } catch (e) {
+                                console.log('Media Session not fully supported:', e);
+                            }
+                        }
+
+
+                        // load all the metadata, setup the player.
+                        // song is from object {order, name, version}
+                        // CHANGED: reuses the single persistent <audio> element (see getOrCreateAudio)
+                        // instead of creating a new one each time, and updates the OS media session.
+                        function launchSong(song) {
+                            let autoplay = settings.autoplay;
+                            curSong = song;
+
+                            console.log(`launching ${song.name} with autoplay setting ${autoplay}`);
+                            console.log(song);
+
+                            // so much setting metadata...
+                            if (!autoplay) {
+                                settings.status = 'paused ' + song.name;
+                                settings.playing = false;
+                            } else {
+                                settings.status = 'playing ' + song.name;
+                                settings.playing = true;
+                            }
+
+                            settings.version = song.version;
+
+                            syncPlayerWithSettings();
+
+                            // build out the audio component and append it to the html:
+                            const player = document.getElementById('player');
+                            const embedLink = song.version.s3_url;
+
+                            try {
+                                // CHANGED: grab the ONE reusable element instead of making a new one.
+                                const audio = getOrCreateAudio();
+
+                                // Make sure it's mounted in the player <li> (only actually moves it once).
+                                if (audio.parentElement !== player) {
+                                    replaceChild(player, audio);
+                                }
+
+                                // Stamp the transition time so a stale, queued 'ended' from the
+                                // song we just left can't immediately trigger another skip.
+                                settings.lastAdvance = Date.now();
+
+                                audio.src = embedLink;
+                                audio.load(); // Important! Forces reload with the new src
+
+                                if (!autoplay) {
+                                    audio.pause();
+                                } else {
+                                    // play() returns a Promise; swallow the rejection if the browser
+                                    // blocks it (e.g. first load outside a user gesture).
+                                    audio.play().catch(err => console.log('play() blocked:', err));
+                                }
+
+                                updateMediaSession(song);
+
+                            } catch (error) {
+                                // replace with a standard red feedback text
+                                console.log("Catching failed launchSong here (1): ");
+                                console.log(error);
+                                const fail = document.createElement('h2');
+                                fail.style = "color: red";
+                                fail.textContent = `Failed to get embed link because ${error.message}`;
+                                settings.playing = false;
+                                settings.status = 'failed to play';
+                                curSong = null;
+                                replaceChild(player, fail);
+                            }
+                        }
+
+                        function startAlbumOrder(albumOrder) {
+                            console.log("Launching albumOrder " + albumOrder.album_order_name);
+                            console.log(albumOrder);
+                            if (!albumOrder.songs || albumOrder.songs.length === 0) {
+                                console.log("Blank song list");
+                                return;
+                            }
+                            settings.albumOrder = albumOrder;
+                            settings.album_order_name = albumOrder.album_order_name;
+                            settings.autoplay = true;
+                            settings.playing = false;
+                            settings.status = 'paused ' + albumOrder.songs[0].name;
+
+                            launchSong(albumOrder.songs[0])
+
+
+                            // Need to give the user the controls to switch between different songs.
+                            // Start paused, let them click play.
+                            // Start the player with the first version. Let them cycle left/right whatever
+                        }
+
+
+
+
+
+                        // <!-- Run on launch: -->
+                        // remember state, can be modified to include more/less details
+                        let settings = {
+                            status: 'not_playing',
+                            album_order_name: 'none',
+                            albumOrder: 'none',
+                            version: getBlankSongVersion(),
+                            autoplay: true,
+                            returnToAutoPlay: true, // this is used for submitting notes, so we don't autoplay to the next song while typing up a note
+                            playing: false,
+                            audioComponent: null, // will be replaced by a reference to the actual component
+                            lastAdvance: 0, // NEW: timestamp of the last song transition, used to debounce 'ended'
+                        }
+
+                        // would like a decent system for keeping track of the current album order and what's being played
+                        let curSong = null;
+                        /*
+                            {
+                                order: (1-indexed)
+                                name:
+                                version:
+                            }
+                        */
+                        let songInfo = null;
+                        // ^will be populated with:
+                        // actually... maybe I want to pull that directly from the audioComponent?
+                        /*
+                            {
+                                duration: number
+                            }
+                        */
+                        let notesButton = null; // the object for the button for leaving notes
+
+
+                        setHtmlElements();
+                    </script>
+
+
+
+
+
+
+
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer sits at the bottom -->
+    <div data-include="/pages/hidden/faunix/partials/footer.html"></div>
+
+    <script src="/pages/hidden/faunix/js/include.js"></script>
+</body>
+
+</html>

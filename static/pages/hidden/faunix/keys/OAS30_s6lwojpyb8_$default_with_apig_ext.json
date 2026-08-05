@@ -1,0 +1,40 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "api_faunix_bucket",
+    "version" : "2026-01-10 02:53:25UTC"
+  },
+  "servers" : [ {
+    "url" : "https://s6lwojpyb8.execute-api.us-west-2.amazonaws.com/{basePath}",
+    "variables" : {
+      "basePath" : {
+        "default" : ""
+      }
+    }
+  } ],
+  "paths" : {
+    "/upload" : {
+      "x-amazon-apigateway-any-method" : {
+        "responses" : {
+          "default" : {
+            "description" : "Default response for ANY /upload"
+          }
+        },
+        "x-amazon-apigateway-integration" : {
+          "payloadFormatVersion" : "2.0",
+          "type" : "aws_proxy",
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-west-2:lambda:path/2015-03-31/functions/arn:aws:lambda:us-west-2:509726420864:function:lambda_uid_verify/invocations",
+          "connectionType" : "INTERNET"
+        }
+      }
+    }
+  },
+  "x-amazon-apigateway-cors" : {
+    "allowMethods" : [ "OPTIONS", "POST" ],
+    "maxAge" : 300,
+    "allowCredentials" : false,
+    "allowOrigins" : [ "*", "http://127.0.0.1:5500/", "https://bischoffportfolio.com/" ]
+  },
+  "x-amazon-apigateway-importexport-version" : "1.0"
+}
