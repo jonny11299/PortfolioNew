@@ -2,6 +2,8 @@
 	import ImageGallery from './ImageGallery.svelte';
 	import ProjectsTurnstyle from './ProjectsTurnstyle.svelte';
 	import ToolsTurnstyle from './ToolsTurnstyle.svelte';
+	import Resume from './Resume.svelte';
+	import Contact from './Contact.svelte';
 
 	import me_piano from '$lib/imgs/IMG_9853.jpg';
 	import color_lab_preview from '$lib/imgs/color_lab_preview.jpg';
@@ -93,6 +95,14 @@
 
 	<section id="tools" class="passageFullWidth">
 		<ToolsTurnstyle />
+	</section>
+
+	<section id="resume" class="passageFullWidth">
+		<p>don't display resume here, link to it</p>
+	</section>
+
+	<section id="contact" class="passageFullWidth">
+		<Contact />
 	</section>
 
 	<!-- end useful part so far -->
@@ -226,14 +236,14 @@
 			as the backend. It works.
 		</p>
 	</div>
-</div>
 
-<div class="passage">
-	Todo:
-	<p>Wire up all links (no dead links)</p>
-	<p>allow test driving all apps</p>
-	<p>write "learning journey" page and "disclaimer"</p>
-	<p>write generic site-monitoring statistics, like, your javascript watcher</p>
+	<div class="passage">
+		Todo:
+		<p>Wire up all links (no dead links)</p>
+		<p>allow test driving all apps</p>
+		<p>write "learning journey" page and "disclaimer"</p>
+		<p>write generic site-monitoring statistics, like, your javascript watcher</p>
+	</div>
 </div>
 
 <style>

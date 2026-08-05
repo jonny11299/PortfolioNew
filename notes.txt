@@ -1,5 +1,28 @@
 
 
+
+
+8/4/26: Build works.
+- Add the dashboard project
+- Finish the form for contacting you
+- Launch to your site. Migrate old stuff elsewhere. ("old" folder?)
+- Clean up resume, begin applying.
+
+
+
+
+
+
+
+
+
+
+
+Just some lowkey tweaks:
+- make Color Lab overview screen look better "Welcome to the Color Lab, here's an overview" type shit
+
+
+
 -- Possible improvements:
 
 	- could change all the borders to outlines that are inset, so that changing colors is seamless.

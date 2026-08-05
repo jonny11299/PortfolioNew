@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+				<title>Bischoff Portfolio</title>
+
+				<link rel="icon" type="image/png" sizes="32x32" href="/favicon-static/favicon-32x32.png" />
+				<link rel="icon" type="image/png" sizes="16x16" href="/favicon-static/favicon-16x16.png" />
+
+				<!-- gimme those cool fonts: -->
+				<link rel="preconnect" href="https://fonts.googleapis.com" />
+				<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+				<link
+					href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Audiowide&family=Share+Tech+Mono&family=Rajdhani:wght@400;600&display=swap"
+					rel="stylesheet"
+				/>
+
+				<script src="/p5/p5.min.js"></script>
+	</head>
+
+	<!-- Navbar is rendered with classic CSS Styling -->
+	<!-- Eventually I might make this fully accessible from within the processing sketch -->
+	<!-- I will also have to create a fallback option for if processing fails to load -->
+
+	<body style="overflow: hidden;">
+		<!--<nav>
+      <a href="#entranceScreen">entrance screen</a>
+      <a href="#entrance2">entrance2</a>
+      <a href="#home">Home</a>
+      <a href="#sketch">Sketch</a>
+      <a href="#soundLens">SoundLens</a>
+      <a href="#template">Template</a>
+    </nav>-->
+
+		<style>
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+
+			display: flex;
+			justify-content: space-between;
+			/* left/right */
+			align-items: flex-start;
+			/* top */
+
+			background-color: #333333;
+		}
+
+		canvas {
+			display: block;
+			outline: none;
+		}
+
+		.container {
+			max-width: 800px;
+			/* or whatever you prefer */
+			margin: 0 auto;
+			padding: 0 1rem;
+			text-align: center;
+		}
+
+		#sketch-container {
+			position: relative;
+			/* or fixed if you want it to stay on screen while scrolling */
+			top: 0;
+			left: 0;
+			width: 100%;
+			/* or 100% for full width */
+			height: 100%;
+			/* or 100% for full height */
+			/* border: 1px solid #ccc; */
+		}
+
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: Arial, sans-serif;
+		}
+
+		#canvas-container {
+			width: 100%;
+			height: 100vh;
+		}
+
+		nav {
+			width: 0%;
+			min-width: 100px;
+			/* Prevents it from getting too narrow */
+			background-color: #222;
+			padding: 20px;
+			box-sizing: border-box;
+			overflow-y: auto;
+			/* In case you add lots of links */
+		}
+
+		nav a {
+			display: block;
+			color: #fff;
+			text-decoration: none;
+			padding: 10px 0;
+			transition: color 0.2s;
+		}
+
+		nav a:hover {
+			color: #4caf50;
+		}
+
+			.nav-button {
+				position: fixed;
+				top: 20px;
+				left: 20px;
+				padding: 10px 20px;
+				background-color: rgba(0, 0, 0, 0.7);
+				color: white;
+				text-decoration: none;
+				border-radius: 5px;
+				font-family: Arial, sans-serif;
+				z-index: 1000;
+			}
+
+			.nav-button:hover {
+				background-color: rgba(0, 0, 0, 0.9);
+			}
+		</style>
+
+		<a href="/" class="nav-button"> ← Back </a>
+		</a>
+
+		<button
+			id="download"
+			class="nav-button"
+			style="left: 50%; top: 94%; transform: translateX(-50%)"
+			onclick="downloadMap()"
+		>
+			Download Fish Map Here (faster)
+		</button>
+
+		<div id="sketch-container" style="overflow: hidden;">
+			<!-- <script type="module" src="main.js"></script> -->
+			<script src="/fish_app/fishApp.js"></script>
+		</div>
+	</body>
+</html>

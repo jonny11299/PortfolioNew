@@ -5,6 +5,7 @@
 	import bcd from '$lib/imgs/BelovedCommunityDoula.jpg';
 	import fishmap from '$lib/imgs/fishmap.jpg';
 	import soundlens from '$lib/imgs/SoundLens.jpg';
+	import findReplace from '$lib/imgs/findReplace.png';
 	/*
 	CPU Dashboard
 	Beloved Community Doula
@@ -17,7 +18,7 @@
 			name: 'Color Lab',
 			subtitle: 'Design website colorschemes by snapping a picture! 📸',
 			image: color_lab_preview,
-			href: 'link_on_click',
+			href: '/color_lab/index.html',
 			completed: 'Jul 6 2026'
 		},
 		{
@@ -29,7 +30,7 @@
 				href: 'https://api-docs.freewheel.tv/publisher/reference/programmatic-client-creative-api-v4'
 			},
 			image: fw_api_preview,
-			href: 'link_on_click',
+			href: '/fw_api/index.html',
 			completed: 'Jul 14 2026'
 		},
 		{
@@ -37,21 +38,29 @@
 			subtitle:
 				'Upload music and listen to custom playlists, built in vanilla HTML and JS, using an AWS Bucket for storage, and Google Sheets for a database!',
 			image: album_board,
-			href: 'link_on_click',
+			href: 'warning-you-must-make-a-dummy-version-the-job-guys-can-use',
 			completed: 'Jan 27 2026'
 		},
 		{
 			name: 'Beloved Community Doula',
 			subtitle: "A website for my girlfriend's Doula practice, built in vanilla HTML.",
 			image: bcd,
-			href: 'link_on_click',
+			href: 'https://belovedcommunitydoula.com/',
 			completed: 'Sep 26 2026'
+		},
+		{
+			name: 'Vast Macro Replacement',
+			subtitle:
+				'Format advertising VAST links for your organization at the click of a button, using a custom ruleset',
+			image: findReplace,
+			href: '/find_and_replace/fr.html',
+			completed: 'Apr 7 2026'
 		},
 		{
 			name: 'SoundLens',
 			subtitle: 'A fun audiovisual sketch that animates music in the shape of a symmetric flower.',
 			image: soundlens,
-			href: 'link_on_click',
+			href: '/sound_lens/sound_lens.html',
 			completed: 'Nov 21 2018'
 		}
 	];
@@ -61,7 +70,7 @@
 			subtitle:
 				'A map showing the waterbodies, rivers, and watersheds of a particular quadrant in Western Washington. Built using Python with GeoPandas, from public WSDOT geodata packages, as part of an ongoing effort to protect Coho Salmon from toxic runoff chemicals.',
 			image: fishmap,
-			href: 'link_on_click',
+			href: '/fish_app/fishApp.html',
 			last_updated: 'Aug 8 2025'
 		}
 	];
@@ -76,7 +85,7 @@
 					<div class="thumb">
 						<img src={item.image} alt="" loading="lazy" />
 					</div>
-					<a class="name" href={item.href}>{item.name}</a>
+					<a class="name" target="_blank" href={item.href}>{item.name}</a>
 				</div>
 				<p class="subtitle">
 					{#if item.subtitleLink}

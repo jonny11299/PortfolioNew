@@ -20,56 +20,56 @@
 			subtitle: 'Code Editor',
 			purpose: 'Works quickly',
 			image: zed,
-			href: 'link_on_click'
+			href: 'https://zed.dev'
 		},
 		{
 			name: 'Svelte 5',
 			subtitle: 'Framework',
 			purpose: 'Compiles to vanilla JS with clean syntax',
 			image: svelte,
-			href: 'link_on_click'
+			href: 'https://svelte.dev'
 		},
 		{
 			name: 'AWS',
 			subtitle: 'Cloud Platform',
 			purpose: 'Hosts and scales',
 			image: aws,
-			href: 'link_on_click'
+			href: 'https://aws.amazon.com'
 		},
 		{
 			name: 'Claude',
 			subtitle: 'AI Assistant',
 			purpose: 'Cuts through monotonous tasks',
 			image: claude,
-			href: 'link_on_click'
+			href: 'https://www.anthropic.com/'
 		},
 		{
 			name: 'Figma',
 			subtitle: 'Design Tool',
 			purpose: 'Creates mockups before code',
 			image: figma,
-			href: 'link_on_click'
+			href: 'https://www.figma.com'
 		},
 		{
 			name: 'Firefox',
 			subtitle: 'Browser',
 			purpose: 'Respects privacy and RAM',
 			image: firefox,
-			href: 'link_on_click'
+			href: 'https://www.mozilla.org/firefox'
 		},
 		{
 			name: 'Chrome',
 			subtitle: 'Browser',
 			purpose: 'Runs the fastest',
 			image: chrome,
-			href: 'link_on_click'
+			href: 'https://www.google.com/chrome'
 		},
 		{
 			name: 'Node',
 			subtitle: 'Runtime',
 			purpose: 'Powers local development',
 			image: node,
-			href: 'link_on_click'
+			href: 'https://nodejs.org'
 		}
 	];
 
@@ -79,42 +79,42 @@
 			subtitle: 'Language',
 			purpose: 'Processes large data',
 			image: python,
-			href: 'link_on_click'
+			href: 'https://www.python.org'
 		},
 		{
 			name: 'GeoPandas',
 			subtitle: 'Library',
 			purpose: 'Maps geospacial data',
 			image: geopandas,
-			href: 'link_on_click'
+			href: 'https://geopandas.org'
 		},
 		{
 			name: 'Supabase',
 			subtitle: 'Backend Platform',
 			purpose: 'Scales data',
 			image: supabase,
-			href: 'link_on_click'
+			href: 'https://supabase.com'
 		},
 		{
 			name: 'SQL',
 			subtitle: 'Language',
 			purpose: 'Structures data',
 			image: sql,
-			href: 'link_on_click'
+			href: 'https://www.w3schools.com/Sql/sql_quickref.asp'
 		},
 		{
 			name: 'C++',
 			subtitle: 'Language',
 			purpose: 'Gets closer to the machine',
 			image: cplusplus,
-			href: 'link_on_click'
+			href: 'https://isocpp.org'
 		},
 		{
 			name: 'React',
 			subtitle: 'Framework',
 			purpose: 'Matches most team stacks',
 			image: react,
-			href: 'link_on_click'
+			href: 'https://react.dev'
 		}
 	];
 </script>
@@ -127,7 +127,7 @@
 					<div class="thumb">
 						<img src={item.image} alt="" loading="lazy" />
 					</div>
-					<a class="name" href={item.href}>{item.name}</a>
+					<a class="name" target="_blank" href={item.href}>{item.name}</a>
 				</div>
 				<p class="subtitle">
 					{#if item.subtitleLink}

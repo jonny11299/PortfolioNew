@@ -1,5 +1,6 @@
 function createThemeStore() {
 	let theme = $state('light');
+	const THEME_UID = 'theme_project_head_paosubdfp02840tu2'; // so I can nest my projects without their theme interfering with my theme
 
 	const isDark = $derived(
 		theme === 'dark' ||
@@ -8,7 +9,7 @@ function createThemeStore() {
 
 	function setTheme(newTheme) {
 		theme = newTheme;
-		localStorage.setItem('theme', newTheme);
+		localStorage.setItem(THEME_UID, newTheme);
 
 		document.documentElement.classList.add('no-transition');
 		document.documentElement.setAttribute('data-theme', newTheme);
@@ -21,7 +22,7 @@ function createThemeStore() {
 	}
 
 	function init() {
-		const saved = localStorage.getItem('theme');
+		const saved = localStorage.getItem(THEME_UID);
 		setTheme(saved ?? 'notebook');
 	}
 

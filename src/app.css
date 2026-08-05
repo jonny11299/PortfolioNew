@@ -362,8 +362,21 @@ p {
 
 	color: var(--text);
 
-	[data-theme='light'] {
+	[data-theme='light'] & {
 		box-shadow: 2px 3px;
+	}
+	[data-theme='frutiger'] & {
+		background-image: linear-gradient(
+			to bottom,
+			rgba(255, 255, 255, 0.32) 0%,
+			rgba(255, 255, 255, 0.18) 25%,
+			rgba(255, 255, 255, 0.04) 70%,
+			rgba(255, 255, 255, 0.14) 100%
+		);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.7),
+			0 2px 8px rgba(0, 40, 70, 0.35);
+		backdrop-filter: blur(10px) saturate(1.4);
 	}
 }
 
@@ -409,6 +422,87 @@ button:active {
 .inverse:hover {
 	background: color-mix(in srgb, var(--text) 80%, transparent);
 	color: var(--surface);
+}
+
+input,
+textarea,
+select {
+	background-color: var(--bg);
+	border: var(--border-width) solid var(--border);
+	border-radius: var(--border-radius);
+	padding: 0.6rem 0.85rem;
+	margin: 0.25rem;
+
+	color: var(--text);
+	font-family: inherit;
+	font-size: 1rem;
+	line-height: 1.4;
+
+	width: 100%;
+	box-sizing: border-box;
+	transition:
+		border-color var(--transition-time) ease,
+		background-color var(--transition-time) ease,
+		box-shadow var(--transition-time) ease;
+}
+
+textarea {
+	min-height: 6rem;
+	resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder {
+	color: var(--text-hint, var(--text-muted));
+	opacity: 1; /* Firefox dims placeholders by default */
+}
+
+input:hover,
+textarea:hover {
+	border-color: var(--primary-hover);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+	outline: none;
+	border-color: var(--primary);
+	box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+input:disabled,
+textarea:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+[data-theme='light'] input,
+[data-theme='light'] textarea,
+[data-theme='light'] select {
+	box-shadow: 2px 3px;
+}
+
+[data-theme='light'] input:focus,
+[data-theme='light'] textarea:focus {
+	box-shadow:
+		2px 3px,
+		0 0 0 2px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+[data-theme='frutiger'] input,
+[data-theme='frutiger'] textarea,
+[data-theme='frutiger'] select {
+	background-image: linear-gradient(
+		to bottom,
+		rgba(255, 255, 255, 0.32) 0%,
+		rgba(255, 255, 255, 0.18) 25%,
+		rgba(255, 255, 255, 0.04) 70%,
+		rgba(255, 255, 255, 0.14) 100%
+	);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.7),
+		0 2px 8px rgba(0, 40, 70, 0.35);
+	backdrop-filter: blur(10px) saturate(1.4);
 }
 
 .onelineForm {

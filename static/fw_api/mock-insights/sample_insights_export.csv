@@ -1,0 +1,20 @@
+Report Name: sample_insights_export.csv
+Report Generated on: 2026-07-31 12:00:00 EDT
+
+Deal ID,External Deal ID,Deal Name,Deal Type,Deal Status,Primary Trafficker,Salesperson,Floor Price,Pricing Model,Start Date,End Date,Valid Bids,Selected Ads,Win Rate,To-Date Net Counted Ads,To-Date Revenue,Ad Pending Approval,Ad Rejected,Others
+600100,SOYL-1960064,1960064-1_SOYL US|BG|Soylent Broadcasting|Video|Standard :15,Biddable Guaranteed,Active,Devin Park,Riley Fox,22.5000,1st Price Auction Floor,2026-07-02 00:00,2026-09-29 00:00,16025,1282,0.0800,3961025,130713.83,1859,0,0
+600311,INIT-1770348,1770348-1_INIT US|PG|Initech Video|Video|Standard :30,Programmatic Guaranteed,Active,Sam Carter,Jordan Rivera,33.6600,Fixed Price,2026-06-15 00:00,2026-08-22 00:00,93820,9069,0.0967,838820,23486.96,0,0,0
+600522,ACME-1657048,1657048-1_ACME US|PG|ACME Media|Video|Standard :15,Programmatic Guaranteed,Active,Devin Park,Jordan Rivera,11.9200,Fixed Price,2026-07-18 00:00,2026-09-21 00:00,171615,19449,0.1133,2716615,62482.14,33,0,0
+600733,INIT-1857984,1857984-1_INIT US|PMP|Initech Video|Video|Standard :15,Deal,Paused,Sam Carter,Casey Nguyen,24.7500,Fixed Price,2026-07-11 00:00,2026-08-25 00:00,249410,7482,0.0300,4594410,82699.38,0,0,0
+600944,SOYL-1815280,1815280-1_SOYL US|BG|Soylent Broadcasting|Video|Standard :30,Biddable Guaranteed,Cancelled,Sam Carter,Morgan Ellis,31.0600,Fixed Price,2026-07-15 00:00,2026-09-16 00:00,327205,15269,0.0467,1472205,19138.67,4447,0,0
+601155,SOYL-1979959,1979959-1_SOYL US|BG|Soylent Broadcasting|Video|Standard :30,Biddable Guaranteed,Active,Devin Park,Riley Fox,21.8900,Fixed Price,2026-07-01 00:00,2026-08-08 00:00,898941,29964,0.0333,2743941,79574.29,0,0,0
+601366,ACME-1794431,1794431-1_ACME US|PG|ACME Media|Video|Standard :30,Programmatic Guaranteed,Active,Sam Carter,Taylor Brooks,24.4200,Fixed Price,2026-07-12 00:00,2026-08-22 00:00,76736,3836,0.0500,4621736,110921.66,410,0,0
+601577,UMBR-1764927,1764927-1_UMBR US|BG|Umbrella Networks|Video|Standard :15,Biddable Guaranteed,Active,Sam Carter,Riley Fox,31.3900,Fixed Price,2026-07-02 00:00,2026-09-21 00:00,154531,10302,0.0667,1499531,28491.09,0,0,0
+601788,INIT-1737475,1737475-1_INIT US|PG|Initech Video|Video|Standard :30,Programmatic Guaranteed,Active,Devin Park,Jordan Rivera,15.7400,1st Price Auction Floor,2026-06-18 00:00,2026-08-24 00:00,232326,19360,0.0833,3377326,47282.56,2360,0,0
+601999,HOOL-1652535,1652535-1_HOOL US|PMP|Hooli Streaming|Video|Standard :30,Deal,Active,Alexis Reed,Morgan Ellis,22.8100,Fixed Price,2026-07-04 00:00,2026-08-14 00:00,310121,31012,0.1000,255121,2296.09,0,0,0
+602210,INIT-1721130,1721130-1_INIT US|PG|Initech Video|Video|Standard :15,Programmatic Guaranteed,Active,Devin Park,Taylor Brooks,34.2800,1st Price Auction Floor,2026-06-25 00:00,2026-09-10 00:00,470408,42336,0.0900,1015408,16246.53,112,0,0
+602421,UMBR-1876948,1876948-1_UMBR US|PMP|Umbrella Networks|Video|Standard :30,Deal,Active,Sam Carter,Casey Nguyen,21.7500,Fixed Price,2026-06-12 00:00,2026-07-22 00:00,182023,19415,0.1067,4227023,131037.71,0,0,0
+602632,INIT-1886538,1886538-1_INIT US|PG|Initech Video|Video|Standard :15,Programmatic Guaranteed,Paused,Sam Carter,Morgan Ellis,30.4000,1st Price Auction Floor,2026-07-14 00:00,2026-09-19 00:00,793638,97882,0.1233,2438638,112177.35,809,0,0
+602843,ACME-1860156,1860156-1_ACME US|PMP|ACME Media|Video|Standard :15,Deal,Cancelled,Devin Park,Casey Nguyen,24.0300,Fixed Price,2026-07-03 00:00,2026-08-13 00:00,505253,20210,0.0400,650253,13655.31,0,0,0
+603054,INIT-1952953,1952953-1_INIT US|BG|Initech Video|Video|Standard :30,Biddable Guaranteed,Active,Sam Carter,Jordan Rivera,36.4400,1st Price Auction Floor,2026-06-29 00:00,2026-09-18 00:00,229039,29011,0.1267,74039,3479.83,0,0,0
+603265,INIT-1746999,1746999-1_INIT US|BG|Initech Video|Video|Standard :15,Biddable Guaranteed,Active,Devin Park,Taylor Brooks,16.1900,Fixed Price,2026-07-18 00:00,2026-10-10 00:00,840654,36428,0.0433,3285654,72284.39,0,0,0
