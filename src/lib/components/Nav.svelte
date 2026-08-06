@@ -1,5 +1,7 @@
 <script>
 	import { themeStore } from '$lib/stores/theme.svelte.js';
+	import resume from '$lib/imgs/resume.pdf';
+
 	const themes = ['notebook', 'frutiger', 'grid', 'blue-glass', 'light', 'dark'];
 	let theme = $derived(themeStore.theme);
 </script>
@@ -15,8 +17,8 @@
 			<a class="bulletted" href="/#ethos">Ethos</a>
 			<a class="bulletted" href="/#tools">Tools</a>
 		</div>
-		<a href="/resume">Resume</a>
-		<a href="/contact">Contact</a>
+		<a href={resume} target="_blank">Resume</a>
+		<a href="/#contact">Contact</a>
 	</div>
 
 	<p class="label">theme</p>

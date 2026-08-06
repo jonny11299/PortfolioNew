@@ -1,3 +1,4 @@
+<!-- Gutted on 8/5/26. We no longer display the resume in an iframe. It didn't look good. -->
 <script>
 	import resume from '$lib/imgs/resume.pdf';
 </script>

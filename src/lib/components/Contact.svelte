@@ -1,21 +1,87 @@
+<!-- Check out history at https://app.web3forms.com/dashboard -->
+
 <script>
+	import { PUBLIC_FORM_ACCESS_KEY as FORM_KEY } from '$env/static/public';
+
+	let name,
+		email,
+		org,
+		message = $state('');
+	let botcheck = $state(false);
+
+	let status = $state('idle');
+
+	async function submit(e) {
+		e.preventDefault();
+
+		status = 'sending';
+		const d = new Date();
+		const date = d.toLocaleDateString();
+
+		try {
+			const res = await fetch('https://api.web3forms.com/submit', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+				body: JSON.stringify({
+					access_key: FORM_KEY,
+					name,
+					email,
+					org,
+					message,
+					botcheck,
+					subject: `Portfolio contact from ${name} (${org}) on ${date}`
+				})
+			});
+			status = res.ok ? 'sent' : 'not-okay';
+		} catch (err) {
+			status = 'error';
+			console.error('Error submitting form', err);
+		}
+
+		if (status === 'not-okay') {
+			console.error("Silent error submitting form. status === 'not-okay'");
+		}
+	}
 </script>
 
 <h1>Contact Me</h1>
 
-<h3>Name:</h3>
-<input id="Name" type="text" />
+<form onsubmit={submit}>
+	<label class="formLabel" for="name">Name:</label>
+	<input id="name" name="name" type="text" bind:value={name} autocomplete="name" required />
 
-<h3>Email:</h3>
-<input id="Email" type="text" />
+	<label class="formLabel" for="email">Email:</label>
+	<input id="email" name="email" type="email" bind:value={email} autocomplete="email" required />
 
-<h3>Organization:</h3>
-<input id="Org" type="text" />
+	<label class="formLabel" for="org">Organization:</label>
+	<input id="org" name="org" type="text" bind:value={org} autocomplete="organization" required />
 
-<h3>Message:</h3>
-<textarea id="Message" type="text" />
+	<label class="formLabel" for="message">Message:</label>
+	<textarea id="message" name="message" rows="6" bind:value={message} required></textarea>
 
-<button class="submitButton">Submit</button>
+	<input
+		type="checkbox"
+		name="botcheck"
+		bind:checked={botcheck}
+		style="display: none;"
+		tabindex="-1"
+		aria-hidden="true"
+	/>
+
+	<button type="submit" class="submitButton" disabled={status === 'sending'}>
+		{status === 'sending' ? 'Sending...' : 'Submit'}
+	</button>
+
+	<p aria-live="polite">
+		{#if status === 'sent'}
+			Thanks for submitting. I'll get back to you soon.
+		{:else if status === 'error'}
+			Something went wrong. Please email me directly at <a
+				href="mailto:jonathan.bischoff.12@gmail.com">jonathan.bischoff.12@gmail.com</a
+			>.
+		{/if}
+	</p>
+</form>
 
 <style>
 	.container {
@@ -71,6 +137,22 @@
 		letter-spacing: -0.01em;
 	}
 	h3 {
+		margin: 2.5rem 0 1rem;
+		font-family: var(--font-mono);
+		font-size: 1rem;
+		font-weight: 500;
+		letter-spacing: 0.1em;
+		color: var(--text-muted);
+		padding-bottom: 0.6rem;
+		border-bottom: 1px solid var(--divider);
+	}
+
+	form {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.formLabel {
 		margin: 2.5rem 0 1rem;
 		font-family: var(--font-mono);
 		font-size: 1rem;
