@@ -25,14 +25,14 @@
 		{
 			name: 'Svelte 5',
 			subtitle: 'Framework',
-			purpose: 'Compiles to vanilla JS with clean syntax',
+			purpose: 'Compiles to vanilla JS and uses clean syntax',
 			image: svelte,
 			href: 'https://svelte.dev'
 		},
 		{
 			name: 'AWS',
 			subtitle: 'Cloud Platform',
-			purpose: 'Hosts and scales',
+			purpose: 'Hosts large files and scales to more users',
 			image: aws,
 			href: 'https://aws.amazon.com'
 		},
@@ -46,7 +46,7 @@
 		{
 			name: 'Figma',
 			subtitle: 'Design Tool',
-			purpose: 'Creates mockups before code',
+			purpose: 'Creates mockups visually before writing code',
 			image: figma,
 			href: 'https://www.figma.com'
 		},
@@ -60,7 +60,7 @@
 		{
 			name: 'Chrome',
 			subtitle: 'Browser',
-			purpose: 'Runs the fastest',
+			purpose: 'Runs in-browser apps the fastest',
 			image: chrome,
 			href: 'https://www.google.com/chrome'
 		},
@@ -91,7 +91,7 @@
 		{
 			name: 'Supabase',
 			subtitle: 'Backend Platform',
-			purpose: 'Scales data',
+			purpose: 'Organizes and scales data',
 			image: supabase,
 			href: 'https://supabase.com'
 		},
@@ -105,7 +105,7 @@
 		{
 			name: 'C++',
 			subtitle: 'Language',
-			purpose: 'Gets closer to the machine',
+			purpose: 'Gets closer to the machine; we studied C++ in my undergrad (Vanderbilt 2017-2021)',
 			image: cplusplus,
 			href: 'https://isocpp.org'
 		},

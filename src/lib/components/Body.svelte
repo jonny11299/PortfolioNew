@@ -11,7 +11,7 @@
 	import fw_api_deal from '$lib/imgs/fw_api_deal.jpg';
 	import fw_api_videos from '$lib/imgs/fw_api_deal_2.jpg';
 
-	const COLOR_LAB_LINK = 'example.com';
+	// const COLOR_LAB_LINK = 'example.com';
 </script>
 
 <div class="container">
@@ -81,8 +81,9 @@
 		</p>
 		<p>
 			Friction should be <span class="keyText">minimal</span> where possible, except for operations
-			with <span class="keyText">big consequences</span> like deleting a database or deploying information
-			to the public. Here, friction is introduced to remind the user of the gravity of their actions.
+			with <span class="keyText">big consequences</span> like deleting a database or deploying
+			information to the public. Here, friction is introduced to remind the user of the
+			<span class="keyText"> gravity</span> of their actions.
 		</p>
 		<p style="margin-top: 3rem;">
 			The result is an application that allows the user to enter a <span class="keyText"
@@ -97,16 +98,19 @@
 		<ToolsTurnstyle />
 	</section>
 
+	<!--
 	<section id="resume" class="passageFullWidth">
 		<p>don't display resume here, link to it</p>
 	</section>
+	 -->
 
-	<section id="contact" class="passageFullWidth">
+	<section id="contact" class="passageFullWidth" style="margin-bottom: 1rem;">
 		<Contact />
 	</section>
 
 	<!-- end useful part so far -->
 
+	<!--
 	<div class="passage">
 		<div class="previewVerticalContainer">
 			<img
@@ -185,7 +189,6 @@
 			<p>
 				My favorite software to use is <span class="keyText">Ableton Live</span>.
 				<span class="moreDetails">why?</span>
-				<!-- opens up './expand/AbletonLive.svelte' -->
 			</p>
 		</div>
 	</div>
@@ -244,6 +247,7 @@
 		<p>write "learning journey" page and "disclaimer"</p>
 		<p>write generic site-monitoring statistics, like, your javascript watcher</p>
 	</div>
+	 -->
 </div>
 
 <style>
@@ -364,7 +368,7 @@
 	}
 
 	.keyText {
-		color: var(--text);
+		color: var(--primary);
 		font-weight: bold;
 		transition:
 			color var(--transition-time) ease,

@@ -136,7 +136,7 @@
 	--text-hint: rgba(206, 213, 222, 0.68);
 
 	/* Brand */
-	--primary: #419894;
+	--primary: #41cc94;
 	--primary-hover: #0dbffb;
 	--secondary: #5be5d4;
 	--accent: #72819b;
@@ -255,7 +255,7 @@
 	background-size: cover;
 
 	/* Surfaces */
-	--bg: #0a4a72;
+	--bg: #0a4a72bb;
 	--surface: rgba(255, 255, 255, 0.12);
 
 	/* Text */
@@ -266,7 +266,7 @@
 	--text-warn: #ffc98a;
 
 	/* Brand — all readable as text on the surfaces above */
-	--primary: #8ce8e0;
+	--primary: #fce9b3;
 	--primary-hover: #c4fbd4;
 	--secondary: #a9dcff;
 	--accent: #dcf58a;
