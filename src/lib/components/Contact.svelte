@@ -3,10 +3,10 @@
 <script>
 	import { PUBLIC_FORM_ACCESS_KEY as FORM_KEY } from '$env/static/public';
 
-	let name,
-		email,
-		org,
-		message = $state('');
+	let name = $state('');
+	let email = $state('');
+	let org = $state('');
+	let message = $state('');
 	let botcheck = $state(false);
 
 	let status = $state('idle');
