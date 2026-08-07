@@ -1,12 +1,14 @@
 
 
 
+For bonus points:
+- Add the dashboard project (wip)
+
 
 8/4/26: Build works.
 - github too big, look into it. (Done)
-- Add the dashboard project (wip)
-- Finish the form for contacting you (wip)
-- Launch to your site. Migrate old stuff elsewhere. ("old" folder?)
+- Finish the form for contacting you (Done)
+- Launch to your site. Migrate old stuff elsewhere. (Migrated it to match the dir structure)
 - Clean up resume, begin applying.
 
 
