@@ -252,7 +252,7 @@
 
 <style>
 	.container {
-		max-width: 50vw;
+		max-width: 980px;
 		margin-inline: auto;
 		height: 100%;
 		padding: var(--padding);

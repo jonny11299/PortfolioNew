@@ -7,6 +7,13 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="text-scale" content="scale" />
 		%sveltekit.head%
+
+		<script>
+			// hardcoded here and in 'theme.svelte.js' ... this will rot if I change the key, but should be fine for a quick solution currently.
+			let theme = localStorage.getItem('theme_project_head_paosubdfp02840tu2');
+			if (!theme) theme = 'notebook';
+			document.documentElement.setAttribute('data-theme', theme);
+		</script>
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>

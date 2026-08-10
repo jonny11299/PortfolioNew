@@ -2,11 +2,13 @@
 	import { themeStore } from '$lib/stores/theme.svelte.js';
 	import resume from '$lib/imgs/resume.pdf';
 
+	let { aspect } = $props();
+
 	const themes = ['notebook', 'frutiger', 'grid', 'blue-glass', 'light', 'dark'];
 	let theme = $derived(themeStore.theme);
 </script>
 
-<nav>
+<nav class:applySticky={aspect !== 'phone'}>
 	<h1>Jonathan Bischoff</h1>
 	<p class="role">frontend engineer</p>
 
@@ -36,9 +38,6 @@
 
 <style>
 	nav {
-		position: fixed;
-		top: 1rem;
-		left: var(--sticky-left-margin);
 		z-index: 100;
 		max-width: var(--sticky-max-width);
 		padding: var(--padding);
@@ -65,6 +64,11 @@
 				0 2px 8px rgba(0, 40, 70, 0.35);
 			backdrop-filter: blur(10px) saturate(1.4);
 		}
+	}
+
+	.applySticky {
+		position: sticky;
+		top: 1rem;
 	}
 
 	/* --- identity --- */
