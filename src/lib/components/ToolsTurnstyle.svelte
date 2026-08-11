@@ -170,7 +170,7 @@
 	h3 {
 		margin: 2.5rem 0 1rem;
 		font-family: var(--font-mono);
-		font-size: 1rem;
+		font-size: calc(1rem * var(--font-scale));
 		font-weight: 500;
 		letter-spacing: 0.1em;
 		color: var(--text-muted);
@@ -280,5 +280,6 @@
 		color: color-mix(in srgb, var(--text-muted) 70%, var(--surface));
 		cursor: default; /* explicitly non-interactive; not covered by the link overlay anyway */
 		font-family: var(--font-mono);
+		font-size: calc(0.8rem * var(--font-scale));
 	}
 </style>

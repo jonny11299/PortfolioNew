@@ -337,7 +337,7 @@
 	.subdivider {
 		margin: 2.5rem 0 1rem;
 		font-family: var(--font-mono);
-		font-size: 1rem;
+		font-size: calc(1rem * var(--font-scale));
 		font-weight: 500;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;

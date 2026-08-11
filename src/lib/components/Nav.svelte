@@ -131,7 +131,7 @@
 		border-top: 1px solid var(--divider);
 
 		font-family: var(--font-mono);
-		font-size: 0.7rem;
+		font-size: calc(0.7rem * var(--font-scale));
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: var(--text-muted);
@@ -139,11 +139,13 @@
 
 	.themes {
 		display: flex;
+		flex-direction: column;
 		flex-wrap: wrap;
 		gap: 0.35rem;
 	}
 
 	.themes button {
+		width: 50%;
 		margin: 0;
 		padding: 0.15rem 0.55rem;
 

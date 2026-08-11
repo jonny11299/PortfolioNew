@@ -17,8 +17,10 @@
 	--divider-size: 0.4rem;
 	letter-spacing: 0.01em;
 
-	--font-sans: sans-serif;
-	--font-mono: monospace;
+	--font-sans: 'Quicksand', sans-serif;
+	--font-mono: 'IBM Plex Mono', monospace;
+	--font-scale: 1;
+	--font-weight: 400;
 
 	--transition-time: 0.3s;
 
@@ -72,6 +74,9 @@
 
 	--border-width: 0px;
 	--border-radius: 0px;
+
+	--font-sans: 'Quicksand', sans-serif;
+	--font-mono: 'IBM Plex Mono', monospace;
 }
 
 /* --- Greyscale theme (neutral chrome; user's palette is the only chroma) --- */
@@ -147,8 +152,9 @@
 	--border-radius: 9px;
 
 	/* Fonts — edit freely */
-	--font-sans: sans-serif;
-	--font-mono: monospace;
+	--font-sans: 'Play', sans-serif;
+	--font-mono: 'Electrolize', monospace;
+	--font-scale: 1.05;
 }
 
 [data-theme='notebook'] {
@@ -179,6 +185,9 @@
 
 	--border-width: 1px;
 	--border-radius: 5px;
+
+	--font-sans: 'Quicksand', sans-serif;
+	--font-weight: 500;
 }
 
 [data-theme='grid'] {
@@ -239,6 +248,8 @@
 
 	--border-width: 0;
 	--border-radius: 0px;
+
+	--font-sans: 'Play', sans-serif;
 }
 
 [data-theme='frutiger'] {
@@ -276,6 +287,10 @@
 	--border-width: 1px;
 	--border-radius: 12px;
 	--divider: rgba(255, 255, 255, 0.4);
+
+	--font-sans: 'SN Pro', sans-serif;
+	--font-mono: 'Quicksand', sans-serif;
+	--font-scale: 1.05;
 }
 
 /* --- custom textures: --- */
@@ -337,6 +352,7 @@
 
 html {
 	background-color: var(--bg);
+	font-size: calc(1rem * var(--font-scale));
 }
 
 /* --- Global base styles --- */
@@ -344,11 +360,25 @@ body {
 	background-color: none;
 	color: var(--text);
 	font-family: var(--font-sans);
+	font-weight: var(--font-weight);
 	margin: 0;
 }
 
 p {
-	font-size: 1.2em;
+	font-size: calc(1.2rem * var(--font-scale));
+}
+
+a,
+p,
+span,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: var(--font-sans);
 }
 
 .card {
