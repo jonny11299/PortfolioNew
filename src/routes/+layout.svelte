@@ -36,6 +36,7 @@
 	// Caudex
 	import '@fontsource/caudex';
 	import '@fontsource/spectral';
+	import '@fontsource/shadows-into-light'; // only weight available: 400
 
 	import { themeStore } from '$lib/stores/theme.svelte.js';
 	import favicon from '$lib/assets/favicon.png';

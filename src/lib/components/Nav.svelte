@@ -4,7 +4,7 @@
 
 	let { aspect } = $props();
 
-	const themes = ['notebook', 'frutiger', 'grid', 'blue-glass', 'light', 'dark'];
+	const themes = ['grid', 'notebook', 'frutiger', 'blue-glass', 'light', 'dark'];
 	let theme = $derived(themeStore.theme);
 </script>
 
