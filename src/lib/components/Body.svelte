@@ -16,7 +16,7 @@
 	let { aspect } = $props();
 </script>
 
-<div class="container">
+<div class="container" class:clampWidthForPhone={aspect === 'phone'}>
 	<section id="top" class="passage">
 		<div
 			class:previewLeftContainer={aspect !== 'phone'}
@@ -42,7 +42,7 @@
 	</section>
 
 	<section id="projects" class="passageFullWidth">
-		<ProjectsTurnstyle />
+		<ProjectsTurnstyle {aspect} />
 	</section>
 
 	<section id="ethos" class="passage">
@@ -105,7 +105,7 @@
 	</section>
 
 	<section id="tools" class="passageFullWidth">
-		<ToolsTurnstyle />
+		<ToolsTurnstyle {aspect} />
 	</section>
 
 	<!--
@@ -278,6 +278,10 @@
 		justify-content: center;
 		align-items: center;
 	}
+	.clampWidthForPhone {
+		max-width: 28rem;
+		padding-inline: 0.5rem;
+	}
 
 	h3,
 	h2 {
@@ -415,7 +419,9 @@
 		margin-bottom: 1rem;
 		padding-bottom: 1rem;
 		border-bottom: 2px solid var(--border);
-		align-self: center;
+
+		align-self: auto;
+		margin-inline: auto;
 	}
 
 	.clickable {
@@ -424,9 +430,11 @@
 
 	.imageSmall {
 		max-width: 10rem;
+		width: 100%;
 	}
 	.imageBigger {
 		max-width: 18rem;
+		width: 100%;
 	}
 
 	.imageFill {

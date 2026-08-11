@@ -6,6 +6,8 @@
 	import fishmap from '$lib/imgs/fishmap.jpg';
 	import soundlens from '$lib/imgs/SoundLens.jpg';
 	import findReplace from '$lib/imgs/findReplace.png';
+
+	let { aspect } = $props();
 	/*
 	CPU Dashboard
 	Beloved Community Doula
@@ -78,7 +80,7 @@
 </script>
 
 {#snippet previewRow(items)}
-	<div class="previewContainer">
+	<div class="previewContainer" class:previewContainerPhone={aspect === 'phone'}>
 		{#each items as item (item.name)}
 			<div class="preview">
 				<div class="clickable">
@@ -127,6 +129,7 @@
 		font-size: 2.25rem;
 		font-weight: 600;
 		letter-spacing: -0.01em;
+		overflow-wrap: anywhere;
 	}
 	h3 {
 		margin: 2.5rem 0 1rem;
@@ -137,14 +140,18 @@
 		color: var(--text-muted);
 		padding-bottom: 0.6rem;
 		border-bottom: 1px solid var(--divider);
+		overflow-wrap: anywhere;
 	}
 	/* --- row --- */
 	.previewContainer {
 		display: grid;
 		width: 100%;
-		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 		gap: 1.5rem;
 		align-items: start;
+	}
+	.previewContainerPhone {
+		grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
 	}
 	/* --- card --- */
 	.preview {
@@ -198,6 +205,7 @@
 		color: var(--text);
 		text-decoration: none;
 		transition: color var(--transition-time) ease;
+		overflow-wrap: anywhere;
 	}
 	.name::after {
 		content: '';

@@ -14,6 +14,8 @@
 	import sql from '$lib/imgs/skill-previews/sql.jpg';
 	import cplusplus from '$lib/imgs/skill-previews/cplusplus.jpg';
 
+	let { aspect } = $props();
+
 	let preferred = [
 		{
 			name: 'Zed',
@@ -120,7 +122,7 @@
 </script>
 
 {#snippet previewRow(items)}
-	<div class="previewContainer">
+	<div class:previewContainer={aspect !== 'phone'} class:previewContainerPhone={aspect === 'phone'}>
 		{#each items as item (item.name)}
 			<div class="preview">
 				<div class="clickable">
@@ -166,6 +168,7 @@
 		font-size: 2.25rem;
 		font-weight: 600;
 		letter-spacing: -0.01em;
+		overflow-wrap: anywhere;
 	}
 	h3 {
 		margin: 2.5rem 0 1rem;
@@ -176,12 +179,20 @@
 		color: var(--text-muted);
 		padding-bottom: 0.6rem;
 		border-bottom: 1px solid var(--divider);
+		overflow-wrap: anywhere;
 	}
 	/* --- row --- */
 	.previewContainer {
 		display: grid;
 		width: 100%;
 		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+		gap: 1.5rem;
+		align-items: start;
+	}
+	.previewContainerPhone {
+		display: grid;
+		width: 100%;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 1.5rem;
 		align-items: start;
 	}

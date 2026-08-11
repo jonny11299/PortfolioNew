@@ -382,6 +382,20 @@ h6 {
 	font-family: var(--font-sans);
 }
 
+img,
+svg,
+video,
+canvas {
+	max-width: 100%;
+	height: auto;
+}
+input,
+textarea,
+select {
+	min-width: 0;
+	margin: 0.25rem 0;
+}
+
 .card {
 	background-color: var(--surface);
 	border: var(--border-width) solid var(--border);
@@ -537,7 +551,7 @@ textarea:disabled {
 }
 
 .onelineForm {
-	min-width: 8ch;
+	min-width: 8rem;
 	width: auto;
 	field-sizing: content;
 	/* Chrome/Edge 123+, lets it grow with typed text */
