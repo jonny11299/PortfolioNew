@@ -174,5 +174,6 @@
 		margin-top: 3rem;
 		font-size: 2em;
 		border-width: 2 * var(--border-width);
+		font-family: var(--font-sans);
 	}
 </style>

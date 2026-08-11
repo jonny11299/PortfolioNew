@@ -33,6 +33,10 @@
 	// Electrolize — single weight, 400 only
 	import '@fontsource/electrolize';
 
+	// Caudex
+	import '@fontsource/caudex';
+	import '@fontsource/spectral';
+
 	import { themeStore } from '$lib/stores/theme.svelte.js';
 	import favicon from '$lib/assets/favicon.png';
 	import { onMount } from 'svelte';

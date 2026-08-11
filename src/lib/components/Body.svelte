@@ -12,14 +12,24 @@
 	import fw_api_videos from '$lib/imgs/fw_api_deal_2.jpg';
 
 	// const COLOR_LAB_LINK = 'example.com';
+
+	let { aspect } = $props();
 </script>
 
 <div class="container">
 	<section id="top" class="passage">
-		<div class="previewLeftContainer">
-			<div class="previewLeftImage">
+		<div
+			class:previewLeftContainer={aspect !== 'phone'}
+			class:previewTopContainer={aspect === 'phone'}
+		>
+			<div class:previewLeftImage={aspect !== 'phone'} class:previewTopImage={aspect === 'phone'}>
 				<a href="/resume">
-					<img class="imageSmall" src={me_piano} alt="me_piano" />
+					<img
+						class:imageSmall={aspect !== 'phone'}
+						class:imageBigger={aspect === 'phone'}
+						src={me_piano}
+						alt="me_piano"
+					/>
 				</a>
 			</div>
 			<div class="previewLeftText">
@@ -396,6 +406,18 @@
 		align-content: center;
 	}
 
+	.previewTopContainer {
+		display: flex;
+		flex-direction: column;
+		overflow: auto;
+	}
+	.previewTopImage {
+		margin-bottom: 1rem;
+		padding-bottom: 1rem;
+		border-bottom: 2px solid var(--border);
+		align-self: center;
+	}
+
 	.clickable {
 		cursor: pointer;
 	}
@@ -403,6 +425,10 @@
 	.imageSmall {
 		max-width: 10rem;
 	}
+	.imageBigger {
+		max-width: 18rem;
+	}
+
 	.imageFill {
 		width: auto;
 		max-width: 80%;

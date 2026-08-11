@@ -57,7 +57,7 @@
 	class:phone={aspect === 'phone'}
 >
 	<Nav {aspect} />
-	<Body />
+	<Body {aspect} />
 </div>
 
 <style>

@@ -186,8 +186,10 @@
 	--border-width: 1px;
 	--border-radius: 5px;
 
-	--font-sans: 'Quicksand', sans-serif;
+	--font-sans: 'Caudex', sans-serif;
+	--font-mono: 'Spectral', monospace;
 	--font-weight: 500;
+	--font-scale: 1.05;
 }
 
 [data-theme='grid'] {

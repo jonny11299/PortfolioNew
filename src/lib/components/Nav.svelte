@@ -27,6 +27,8 @@
 	<div class="themes">
 		{#each themes as t}
 			<button
+				class:phoneWidth={aspect === 'phone'}
+				class:desktopWidth={aspect !== 'phone'}
 				onclick={() => themeStore.setTheme(t)}
 				aria-current={theme === t ? 'true' : undefined}
 			>
@@ -145,7 +147,6 @@
 	}
 
 	.themes button {
-		width: 50%;
 		margin: 0;
 		padding: 0.15rem 0.55rem;
 
@@ -162,6 +163,13 @@
 			color var(--transition-time) ease,
 			border-color var(--transition-time) ease,
 			background-color var(--transition-time) ease;
+	}
+
+	.phoneWidth {
+		width: 100%;
+	}
+	.desktopWidth {
+		width: 61%;
 	}
 
 	.themes button:hover {
