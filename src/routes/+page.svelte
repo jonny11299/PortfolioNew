@@ -9,7 +9,18 @@
 	let aspect = $state('desktop');
 
 	onMount(() => {
-		console.log('Welcome to my console logs. You must be a curious fellow.');
+		console.log(
+			'%c Welcome to my console logs. You must be a curious fellow.',
+			'background: #000; color: #00f000'
+		);
+		console.log(
+			'%c This portfolio is built using Svelte 5 and hosted on Github Pages. You can view the github repo here:',
+			'background: #000; color: #00f000'
+		);
+		console.log(
+			'%c https://github.com/jonny11299/PortfolioNew/tree/main',
+			'background: #000; color: #00f000'
+		);
 		console.log(
 			`We're logging from "routes/+page.svelte," which is the landing page for the application.`
 		);

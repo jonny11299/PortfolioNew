@@ -13,6 +13,9 @@
 	import react from '$lib/imgs/skill-previews/react.png';
 	import sql from '$lib/imgs/skill-previews/sql.jpg';
 	import cplusplus from '$lib/imgs/skill-previews/cplusplus.jpg';
+	import ts from '$lib/imgs/Typescript.svg';
+	import js from '$lib/imgs/javascript.png';
+	import html from '$lib/imgs/HTML5.svg';
 
 	let { aspect } = $props();
 
@@ -53,6 +56,34 @@
 			href: 'https://www.figma.com'
 		},
 		{
+			name: 'JavaScript',
+			subtitle: 'Language',
+			purpose: 'Powers the web',
+			image: js,
+			href: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript'
+		},
+		{
+			name: 'TypeScript',
+			subtitle: 'Language',
+			purpose: 'Moves JS runtime errors to compile-time errors',
+			image: ts,
+			href: 'https://www.typescriptlang.org/'
+		},
+		{
+			name: 'HTML',
+			subtitle: 'Markup Language',
+			purpose: 'Scaffolds the web',
+			image: html,
+			href: 'https://info.cern.ch/hypertext/WWW/TheProject.html'
+		},
+		{
+			name: 'Node',
+			subtitle: 'Runtime',
+			purpose: 'Powers local development',
+			image: node,
+			href: 'https://nodejs.org'
+		},
+		{
 			name: 'Firefox',
 			subtitle: 'Browser',
 			purpose: 'Respects privacy and RAM',
@@ -65,13 +96,6 @@
 			purpose: 'Runs in-browser apps the fastest',
 			image: chrome,
 			href: 'https://www.google.com/chrome'
-		},
-		{
-			name: 'Node',
-			subtitle: 'Runtime',
-			purpose: 'Powers local development',
-			image: node,
-			href: 'https://nodejs.org'
 		}
 	];
 
