@@ -6,6 +6,8 @@
 	import homepage from '$lib/imgs/album/homepage.png';
 	import listen from '$lib/imgs/album/listen.png';
 	import upload from '$lib/imgs/album/upload song.png';
+
+	let { aspect } = $props();
 </script>
 
 <div class="container">
@@ -15,6 +17,7 @@
 			<ImageGallery
 				images={[homepage, listen, addNotes, upload, order]}
 				onclick={() => console.log("display side text about why I can't show this demo")}
+				{aspect}
 			/>
 		</div>
 		<h3>Demo Version: (in-progress)</h3>
@@ -78,14 +81,14 @@
 		</p>
 		<p>
 			I will use SupaBase to scale up the user capacity, SvelteKit to organize routing, and AWS
-			Console to estimate costs.
+			Console to estimate per-user costs and set pricing accordingly.
 		</p>
 	</div>
 </div>
 
 <style>
 	.container {
-		max-width: 50vw;
+		max-width: 980px;
 		margin-inline: auto;
 		height: 100%;
 		padding: var(--padding);
@@ -100,6 +103,48 @@
 
 		justify-content: center;
 		align-items: center;
+	}
+	.clampWidthForPhone {
+		max-width: 28rem;
+		padding-inline: 0.5rem;
+	}
+
+	h3,
+	h2 {
+		text-align: center;
+	}
+
+	.headerDivider {
+		margin-top: 3rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid var(--divider);
+	}
+
+	.passage {
+		background-color: var(--surface);
+		margin-top: 3rem;
+		margin-bottom: 60vh;
+		padding: 1.5rem;
+		border: var(--border-width) solid var(--border);
+		border-radius: var(--border-radius);
+
+		:global([data-theme='light']) & {
+			box-shadow: 2px 3px;
+		}
+
+		:global([data-theme='frutiger']) & {
+			background-image: linear-gradient(
+				to bottom,
+				rgba(255, 255, 255, 0.32) 0%,
+				rgba(255, 255, 255, 0.18) 25%,
+				rgba(255, 255, 255, 0.04) 70%,
+				rgba(255, 255, 255, 0.14) 100%
+			);
+			box-shadow:
+				inset 0 1px 0 rgba(255, 255, 255, 0.7),
+				0 2px 8px rgba(0, 40, 70, 0.35);
+			backdrop-filter: blur(10px) saturate(1.4);
+		}
 	}
 	.passageFullWidth {
 		background-color: var(--surface);
@@ -127,9 +172,5 @@
 				0 2px 8px rgba(0, 40, 70, 0.35);
 			backdrop-filter: blur(10px) saturate(1.4);
 		}
-	}
-
-	.centered {
-		text-align: center;
 	}
 </style>

@@ -1,12 +1,10 @@
 <script>
 	import { fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-
-	let { images } = $props();
+	let { images, aspect } = $props();
 	let size = $derived(images.length ?? 0);
 	let i = $state(0);
 	let direction = $state(1); // 1 = advancing right, -1 = advancing left
-
 	function left() {
 		direction = -1;
 		i = (i - 1 + size) % size;
@@ -17,7 +15,7 @@
 	}
 </script>
 
-<div class="gallery">
+<div class="gallery" class:phone={aspect === 'phone'} role="group" aria-label="Image gallery">
 	<div class="container">
 		<button class="arrow" onclick={left} aria-label="Previous image" disabled={size === 0}>
 			<svg
@@ -33,7 +31,7 @@
 				<polyline points="15 18 9 12 15 6" />
 			</svg>
 		</button>
-		<div class="stage">
+		<div class="stage" aria-live="polite" aria-atomic="true">
 			{#if size > 0}
 				{#key i}
 					<div
@@ -88,6 +86,7 @@
 		align-items: center;
 		gap: 1rem;
 		width: 100%;
+		box-sizing: border-box;
 	}
 	.container {
 		display: grid;
@@ -110,6 +109,7 @@
 		background: var(--surface);
 		color: var(--text);
 		cursor: pointer;
+		flex-shrink: 0;
 		transition:
 			transform var(--transition-time) ease,
 			background var(--transition-time) ease,
@@ -156,7 +156,6 @@
 		height: var(--gallery-height);
 		display: flex;
 		align-items: center;
-
 		justify-content: center;
 		border: 1px dashed var(--divider);
 		border-radius: var(--border-radius);
@@ -183,5 +182,44 @@
 	.dot.active {
 		background: var(--primary);
 		transform: scale(1.3);
+	}
+
+	/* --- Phone mode (aspect === 'phone') --- */
+	/* Fits comfortably in a 320px viewport: image takes the full width on its
+	   own row, prev/next buttons move to a single row underneath (kept at a
+	   44px touch target), and dots get a bigger tap area without growing
+	   visually. */
+	.gallery.phone {
+		--gallery-height: 14rem;
+		padding-inline: 0.5rem;
+	}
+	.gallery.phone .container {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		gap: 0.75rem;
+		max-width: 100%;
+		height: auto;
+	}
+	.gallery.phone .stage {
+		order: 1;
+		flex: 1 1 100%;
+		width: 100%;
+	}
+	.gallery.phone .arrow {
+		order: 2;
+	}
+	.gallery.phone .arrow:last-of-type {
+		order: 3;
+	}
+	.gallery.phone .dots {
+		flex-wrap: wrap;
+		justify-content: center;
+		max-width: 100%;
+	}
+	.gallery.phone .dot {
+		padding: 10px; /* expands the tap target to ~28px without enlarging the visible dot */
+		background-clip: content-box;
 	}
 </style>
