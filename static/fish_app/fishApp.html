@@ -3,12 +3,9 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
 				<title>Bischoff Portfolio</title>
-
 				<link rel="icon" type="image/png" sizes="32x32" href="/favicon-static/favicon-32x32.png" />
 				<link rel="icon" type="image/png" sizes="16x16" href="/favicon-static/favicon-16x16.png" />
-
 				<!-- gimme those cool fonts: -->
 				<link rel="preconnect" href="https://fonts.googleapis.com" />
 				<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,14 +13,11 @@
 					href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Audiowide&family=Share+Tech+Mono&family=Rajdhani:wght@400;600&display=swap"
 					rel="stylesheet"
 				/>
-
 				<script src="/p5/p5.min.js"></script>
 	</head>
-
 	<!-- Navbar is rendered with classic CSS Styling -->
 	<!-- Eventually I might make this fully accessible from within the processing sketch -->
 	<!-- I will also have to create a fallback option for if processing fails to load -->
-
 	<body style="overflow: hidden;">
 		<!--<nav>
       <a href="#entranceScreen">entrance screen</a>
@@ -33,28 +27,32 @@
       <a href="#soundLens">SoundLens</a>
       <a href="#template">Template</a>
     </nav>-->
-
 		<style>
-
 		html,
 		body {
 			margin: 0;
 			padding: 0;
-
-			display: flex;
-			justify-content: space-between;
-			/* left/right */
-			align-items: flex-start;
-			/* top */
-
-			background-color: #333333;
+			height: 100%;
+			background-color: #1e1e3c;
 		}
-
+		/* Body is now the flex column that stacks everything and keeps
+		   it on-screen. No percentage-based positioning anywhere below;
+		   #sketch-container is the flexible element that grows/shrinks
+		   to absorb whatever space intro-text/loading-text/download don't use. */
+		body {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			width: 90%;
+			height: 100vh;
+			margin: 0 auto;
+			font-family: Arial, sans-serif;
+			box-sizing: border-box;
+		}
 		canvas {
 			display: block;
 			outline: none;
 		}
-
 		.container {
 			max-width: 800px;
 			/* or whatever you prefer */
@@ -62,30 +60,16 @@
 			padding: 0 1rem;
 			text-align: center;
 		}
-
 		#sketch-container {
 			position: relative;
-			/* or fixed if you want it to stay on screen while scrolling */
-			top: 0;
-			left: 0;
 			width: 100%;
-			/* or 100% for full width */
-			height: 100%;
-			/* or 100% for full height */
-			/* border: 1px solid #ccc; */
+			/* This is the element that gets resized: it takes whatever
+			   vertical space is left after the text/button rows above and
+			   below it, so nothing ever runs off-screen. */
+			flex: 1 1 auto;
+			min-height: 0;
+			overflow: hidden;
 		}
-
-		body {
-			margin: 0;
-			padding: 0;
-			font-family: Arial, sans-serif;
-		}
-
-		#canvas-container {
-			width: 100%;
-			height: 100vh;
-		}
-
 		nav {
 			width: 0%;
 			min-width: 100px;
@@ -96,7 +80,6 @@
 			overflow-y: auto;
 			/* In case you add lots of links */
 		}
-
 		nav a {
 			display: block;
 			color: #fff;
@@ -104,11 +87,9 @@
 			padding: 10px 0;
 			transition: color 0.2s;
 		}
-
 		nav a:hover {
 			color: #4caf50;
 		}
-
 			.nav-button {
 				position: fixed;
 				top: 20px;
@@ -121,27 +102,78 @@
 				font-family: Arial, sans-serif;
 				z-index: 1000;
 			}
-
 			.nav-button:hover {
 				background-color: rgba(0, 0, 0, 0.9);
 			}
-		</style>
 
+			/* --- Text that used to be drawn on the p5 canvas, now real HTML ---
+			   clamp(min, preferred, max) keeps it readable on a 320px phone
+			   (floors at the min) without ballooning on a big desktop monitor
+			   (caps at the max), instead of the old fontSize = 11 * width / 1000
+			   math which produced ~3.5px text on a phone.
+			   These used to be position:fixed with top/bottom percentages;
+			   now they're just flex-column rows, centered by the parent. */
+			#intro-text,
+			#loading-text {
+				width: 100%;
+				text-align: center;
+				color: #ffffff;
+				font-family: 'Share Tech Mono', 'Roboto Mono', monospace;
+				z-index: 20;
+				pointer-events: none;
+				margin: 0;
+				flex: 0 0 auto;
+				box-sizing: border-box;
+			}
+			#intro-text {
+				font-size: clamp(1rem, 2.2vw, 1rem);
+				line-height: 1.5;
+				padding-top: 12px;
+			}
+			#intro-text p {
+				margin: 0 0 0.4em;
+			}
+			#intro-text p:last-child {
+				margin-bottom: 0;
+			}
+			#loading-text {
+				font-size: clamp(1rem, 2.4vw, 1.05rem);
+				white-space: pre-line;
+				transition: opacity 0.2s ease;
+				margin: 0;
+			}
+			#download {
+				/* Overrides the fixed positioning inherited from .nav-button
+				   so it sits in normal flex flow instead of floating at a
+				   percentage offset. */
+				position: static;
+				flex: 0 0 auto;
+				margin: 12px 0;
+			}
+		</style>
 		<a href="/" class="nav-button"> ← Back </a>
 		</a>
 
-		<button
-			id="download"
-			class="nav-button"
-			style="left: 50%; top: 94%; transform: translateX(-50%)"
-			onclick="downloadMap()"
-		>
-			Download Fish Map Here (faster)
-		</button>
+		<div id="intro-text">
+			<p style="margin-top: 4rem;">
+				This is a map showing all of the watersheds, waterbodies, and rivers of a particular
+				quadrant in Western Washington.
+			</p>
+			<p style="margin-bottom: 1rem;">
+				The data is open-source, downloaded from geo.wa.gov. The map is built using GeoPandas and
+				Python in a Jupyter notebook.
+			</p>
+		</div>
 
-		<div id="sketch-container" style="overflow: hidden;">
+		<div id="sketch-container">
 			<!-- <script type="module" src="main.js"></script> -->
 			<script src="/fish_app/fishApp.js"></script>
 		</div>
+
+		<p id="loading-text"></p>
+
+		<button id="download" class="nav-button" onclick="downloadMap()">
+			Download Fish Map Here (faster)
+		</button>
 	</body>
 </html>

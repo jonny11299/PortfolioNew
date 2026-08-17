@@ -1,5 +1,4 @@
-let font;
-let fontSize = 20;
+let sketchContainer;
 
 let emptyMapIframe;
 let filledMapIframe;
@@ -10,16 +9,33 @@ let filled_src = '/fish_app/fish_map.min.html';
 
 let momentLoaded = Date.now();
 
+// how long (ms) the "Loaded map details!" message takes to fade out,
+// measured from the moment the fade actually starts (see FADE_DELAY below)
+const FADE_DELAY = 2000;
+const FADE_DURATION = 7650; // ~ matches the feel of the old (255 - elapsed/30) canvas fade
+
+// Everything (canvas + both iframes) lives inside #sketch-container now,
+// so it's sized/positioned relative to that box instead of the whole page.
+function containerSize() {
+	if (!sketchContainer) return { w: windowWidth, h: windowHeight };
+	return {
+		w: sketchContainer.clientWidth || windowWidth,
+		h: sketchContainer.clientHeight || windowHeight
+	};
+}
+
 function preload() {
-	font = loadFont('/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf');
+	sketchContainer = document.getElementById('sketch-container');
 
 	// Create iframe element
 	emptyMapIframe = createElement('iframe', '');
 	emptyMapIframe.attribute('src', '/fish_app/empty_map.html');
+	emptyMapIframe.parent(sketchContainer);
 
 	// Position and style it
-	emptyMapIframe.position(width * 0.1, height * 0.1);
-	emptyMapIframe.size(width * 0.8, height * 0.8);
+	const { w: cw0, h: ch0 } = containerSize();
+	emptyMapIframe.position(0, 0);
+	emptyMapIframe.size(cw0, ch0);
 	emptyMapIframe.style('border', '0px solid #ccc');
 	emptyMapIframe.style('border-radius', '8px');
 	emptyMapIframe.style('z-index', '10');
@@ -29,18 +45,16 @@ function preload() {
 	// Create iframe element
 	filledMapIframe = createElement('iframe', '');
 	filledMapIframe.attribute('src', filled_src);
+	filledMapIframe.parent(sketchContainer);
 
 	// Position and style it
-	filledMapIframe.position(width * 0.1, height * 0.1);
-	filledMapIframe.size(width * 0.8, height * 0.8);
+	filledMapIframe.position(0, 0);
+	filledMapIframe.size(cw0, ch0);
 	filledMapIframe.style('border', '0px solid #ccc');
 	filledMapIframe.style('border-radius', '8px');
 	filledMapIframe.style('z-index', '10');
 	filledMapIframe.style('overflow', 'hidden');
 	filledMapIframe.style('overflow-y', 'hidden');
-
-	// resizeMap();
-	//
 }
 
 function emptyMapSuccess() {
@@ -58,84 +72,53 @@ function filledMapSuccess() {
 }
 
 function setup() {
-	createCanvas(windowWidth, windowHeight, WEBGL);
-	// your setup code here
-	fontSize = (11 * windowWidth) / 1000;
+	const { w: cw, h: ch } = containerSize();
+
+	// Sized off the container's actual box, not the window, so the canvas
+	// fills #sketch-container exactly instead of overflowing past it.
+	let canvas = createCanvas(cw, ch, WEBGL);
+	canvas.parent(sketchContainer);
 
 	// Add load event listener
 	emptyMapIframe.elt.addEventListener('load', emptyMapSuccess);
 	filledMapIframe.elt.addEventListener('load', filledMapSuccess);
 
-	textAlign(CENTER, CENTER);
-	// loadFont('Courier New');
-	textFont(font);
-
 	resizeMaps();
 }
 
 function draw() {
+	// canvas is now just a dark backdrop behind the iframes; all text lives in HTML (see index.html)
 	background(30, 30, 60);
-	// your draw code here
 
-	textSize(fontSize);
-	textStyle(NORMAL);
-
-	fill(255, 255, 255);
-	noStroke();
-	let t =
-		'This is a map showing all of the watersheds, waterbodies, and rivers of a particular quadrant in Western Washington.\n';
-	t +=
-		'The data is open-source, downloaded from geo.wa.gov. The map is built using GeoPandas and Python in a Jupyter notebook.\n';
-	/*
-    t += "The original goal was to map 6PPD-Quinone pollution patterns by combining this data with traffic data, and thus better address\n";
-    t += "cleanup efforts to protect salmon populations. However, upon contacting the EPA, they sent me a map they had already created\n";
-    t += "to address this problem. Realizing this data project was not needed, I moved on."
-    */
-	text(t, 0, -height / 2 + height / 10);
-
-	let hFromBottom = height / 10;
-
-	if (loadingEmptyMap) {
-		let loadingText = 'Loading map';
-		for (let i = 0; i < Math.floor(frameCount / 20) % 4; i++) {
-			loadingText += '.'; // animates the dot dot dot
-		}
-		text(loadingText, 0, height / 2 - hFromBottom);
-	} else {
-		if (loadingFilledMap) {
-			let loadingText = 'Loading map details';
-			for (let i = 0; i < Math.floor(frameCount / 20) % 4; i++) {
-				loadingText += '.'; // animates the dot dot dot
-			}
-			loadingText += '\nfeel free to scroll this empty map, or';
-			text(loadingText, 0, height / 2 - hFromBottom);
-		} else {
-			let loadingText = 'Loaded map details!';
-
-			// most complex fade out text code you ever seen in your life
-			let maxAlpha = 255;
-			let delay = 2000; // delay in ms
-			let fadeConst = 30;
-			let alpha;
-			if (Date.now() > momentLoaded + delay) {
-				alpha = 255 - (Date.now() - (momentLoaded + delay)) / fadeConst;
-			} else {
-				alpha = 255;
-			}
-			fill(255, 255, 255, alpha);
-			if (alpha > 0) {
-				text(loadingText, 0, height / 2 - hFromBottom);
-			}
-		}
-	}
+	updateLoadingText();
 
 	// rect(50, 50, 50, 50);
 }
 
-function windowResized() {
-	resizeCanvas(windowWidth, windowHeight);
-	fontSize = (11 * windowWidth) / 1000;
+function updateLoadingText() {
+	const loadingEl = document.getElementById('loading-text');
+	if (!loadingEl) return;
 
+	let dots = '.'.repeat(Math.floor(frameCount / 20) % 4);
+
+	if (loadingEmptyMap) {
+		loadingEl.textContent = `Loading map${dots}`;
+		loadingEl.style.opacity = 1;
+	} else if (loadingFilledMap) {
+		loadingEl.textContent = `Loading map details${dots}\nfeel free to scroll this empty map, or`;
+		loadingEl.style.opacity = 1;
+	} else {
+		let elapsedSinceFadeStart = Date.now() - (momentLoaded + FADE_DELAY);
+		let alpha =
+			elapsedSinceFadeStart > 0 ? Math.max(0, 1 - elapsedSinceFadeStart / FADE_DURATION) : 1;
+		loadingEl.textContent = 'Loaded map details!';
+		loadingEl.style.opacity = alpha;
+	}
+}
+
+function windowResized() {
+	const { w: cw, h: ch } = containerSize();
+	resizeCanvas(cw, ch);
 	resizeMaps();
 }
 
@@ -168,12 +151,13 @@ function resizeMaps() {
 	let w = iframeWidth;
 	let h = iframeHeight;
 
-	w = (2 * width) / 3;
-	h = (2 * height) / 3;
+	w = width;
+	h = height;
 
-	// just need to position it correctly...
+	// fills #sketch-container edge-to-edge, relative to it now that it's
+	// the iframe's positioned ancestor...
 
-	emptyMapIframe.position(width / 2 - w / 2, height / 2 - h / 2 + 20);
+	emptyMapIframe.position(0, 0);
 	emptyMapIframe.size(w, h);
 
 	emptyMapIframe.style('border', '0px solid #ccc');
@@ -192,12 +176,12 @@ function resizeMaps() {
 		let wf = filledWidth;
 		let hf = filledHeight;
 
-		wf = (2 * width) / 3;
-		hf = (2 * height) / 3;
+		wf = width;
+		hf = height;
 
-		// just need to position it correctly...
+		// fills #sketch-container edge-to-edge...
 
-		filledMapIframe.position(width / 2 - wf / 2, height / 2 - hf / 2 + 20);
+		filledMapIframe.position(0, 0);
 		filledMapIframe.size(wf, hf);
 
 		filledMapIframe.style('border', '0px solid #ccc');
