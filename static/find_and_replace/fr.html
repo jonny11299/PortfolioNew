@@ -1838,6 +1838,14 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
 				setStatus(`HTML parsed — ${allRows.length} rows × ${headerCells.length} cols`, 'ok-html');
 			}
 
+			let hasUnsavedChanges = true;
+			window.addEventListener('beforeunload', (event) => {
+				if (hasUnsavedChanges) {
+					event.preventDefault();
+					event.returnValue = '';
+				}
+			});
+
 			// ── CELL CLICK → COPY ────────────────────────────────────────
 			tableWrap.addEventListener('click', (e) => {
 				const td = e.target.closest('tbody td:not(.rn)');
@@ -2239,6 +2247,20 @@ Also, these ones are the IAS and DV exception. Check the big book of fw:
 			}
 
 			ruleEditBtn.addEventListener('click', () => editSelectedRule());
+
+			/*
+			document.addEventListener(
+				'scroll',
+				(event) => {
+					console.log('Something scrolled:', event.target);
+				},
+				true
+			);
+
+			tableWrap.addEventListener('scroll', () => {
+				console.log('Scrolled table wrap');
+			});
+			 */
 
 			// key press listener:
 			// keycodes:
