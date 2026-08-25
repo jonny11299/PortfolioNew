@@ -2,7 +2,6 @@
 	import ImageGallery from './ImageGallery.svelte';
 	import ProjectsTurnstyle from './ProjectsTurnstyle.svelte';
 	import ToolsTurnstyle from './ToolsTurnstyle.svelte';
-	import Resume from './Resume.svelte';
 	import Contact from './Contact.svelte';
 
 	import me_piano from '$lib/imgs/IMG_9853.jpg';
@@ -23,7 +22,7 @@
 			class:previewTopContainer={aspect === 'phone'}
 		>
 			<div class:previewLeftImage={aspect !== 'phone'} class:previewTopImage={aspect === 'phone'}>
-				<a href="/resume">
+				<a href="/resume.pdf" target="_blank">
 					<img
 						class:imageSmall={aspect !== 'phone'}
 						class:imageBigger={aspect === 'phone'}
@@ -34,8 +33,8 @@
 			</div>
 			<div class="previewLeftText">
 				<p>
-					I'm <a href="/resume">Jonathan Bischoff</a>, a frontend engineer from Vanderbilt
-					University.
+					I'm <a href="/resume.pdf" target="_blank">Jonathan Bischoff</a>, a frontend engineer from
+					Vanderbilt University.
 				</p>
 			</div>
 		</div>
@@ -107,12 +106,6 @@
 	<section id="tools" class="passageFullWidth">
 		<ToolsTurnstyle {aspect} />
 	</section>
-
-	<!--
-	<section id="resume" class="passageFullWidth">
-		<p>don't display resume here, link to it</p>
-	</section>
-	 -->
 
 	<section id="contact" class="passageFullWidth" style="margin-bottom: 1rem;">
 		<Contact />

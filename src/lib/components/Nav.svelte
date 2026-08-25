@@ -1,6 +1,5 @@
 <script>
 	import { themeStore } from '$lib/stores/theme.svelte.js';
-	import resume from '$lib/imgs/resume.pdf';
 
 	let { aspect } = $props();
 
@@ -19,7 +18,7 @@
 			<a class="bulletted" href="/#ethos">Ethos</a>
 			<a class="bulletted" href="/#tools">Tools</a>
 		</div>
-		<a href={resume} target="_blank">Resume</a>
+		<a href="/resume.pdf" target="_blank">Resume</a>
 		<a href="/#contact">Contact</a>
 	</div>
 
