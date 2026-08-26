@@ -16,6 +16,7 @@
 	import ts from '$lib/imgs/Typescript.svg';
 	import js from '$lib/imgs/javascript.png';
 	import html from '$lib/imgs/HTML5.svg';
+	import nextjs from '$lib/imgs/skill-previews/nextjs.jpg';
 
 	let { aspect } = $props();
 
@@ -29,10 +30,17 @@
 		},
 		{
 			name: 'Svelte 5',
-			subtitle: 'Framework',
+			subtitle: 'Component Framework',
 			purpose: 'Compiles to vanilla JS and uses clean syntax',
 			image: svelte,
 			href: 'https://svelte.dev'
+		},
+		{
+			name: 'SvelteKit',
+			subtitle: 'Full-Stack Framework',
+			purpose: 'Handles routing, like Next.js for Svelte',
+			image: svelte,
+			href: 'https://svelte.dev/docs/kit/introduction#What-is-SvelteKit'
 		},
 		{
 			name: 'AWS',
@@ -99,7 +107,7 @@
 		}
 	];
 
-	let situational = [
+	let proficient = [
 		{
 			name: 'Python',
 			subtitle: 'Language',
@@ -141,6 +149,13 @@
 			purpose: 'Matches most team stacks',
 			image: react,
 			href: 'https://react.dev'
+		},
+		{
+			name: 'NextJS',
+			subtitle: 'Full-Stack Framework',
+			purpose: 'Powers React apps for the modern web',
+			image: nextjs,
+			href: 'https://nextjs.org/'
 		}
 	];
 </script>
@@ -178,8 +193,8 @@
 <h1>Tools</h1>
 <h3>Preferred</h3>
 {@render previewRow(preferred)}
-<h3>Situational</h3>
-{@render previewRow(situational)}
+<h3>Proficient</h3>
+{@render previewRow(proficient)}
 
 <!--
 <h3>Conceptualized</h3>

@@ -33,8 +33,7 @@
 			</div>
 			<div class="previewLeftText">
 				<p>
-					I'm <a href="/resume.pdf" target="_blank">Jonathan Bischoff</a>, a frontend engineer from
-					Vanderbilt University.
+					I'm <a href="/resume.pdf" target="_blank">Jonathan Bischoff</a>, a Front-End Engineer.
 				</p>
 			</div>
 		</div>
@@ -42,6 +41,10 @@
 
 	<section id="projects" class="passageFullWidth">
 		<ProjectsTurnstyle {aspect} />
+	</section>
+
+	<section id="tools" class="passageFullWidth">
+		<ToolsTurnstyle {aspect} />
 	</section>
 
 	<section id="ethos" class="passage">
@@ -101,10 +104,6 @@
 			so they can focus on what
 			<span class="keyText">actually matters</span>.
 		</p>
-	</section>
-
-	<section id="tools" class="passageFullWidth">
-		<ToolsTurnstyle {aspect} />
 	</section>
 
 	<section id="contact" class="passageFullWidth" style="margin-bottom: 1rem;">

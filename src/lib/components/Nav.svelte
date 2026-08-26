@@ -15,8 +15,8 @@
 		<a href="/">Home</a>
 		<div class="sections">
 			<a class="bulletted" href="/#projects">Projects</a>
-			<a class="bulletted" href="/#ethos">Ethos</a>
 			<a class="bulletted" href="/#tools">Tools</a>
+			<a class="bulletted" href="/#ethos">Ethos</a>
 		</div>
 		<a href="/resume.pdf" target="_blank">Resume</a>
 		<a href="/#contact">Contact</a>

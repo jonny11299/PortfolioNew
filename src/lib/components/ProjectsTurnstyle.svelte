@@ -48,7 +48,7 @@
 			subtitle: "A website for my girlfriend's Doula practice, built in vanilla HTML.",
 			image: bcd,
 			href: 'https://belovedcommunitydoula.com/',
-			completed: 'Sep 26 2026'
+			completed: 'Sep 26 2025'
 		},
 		{
 			name: 'Vast Macro Replacement',
