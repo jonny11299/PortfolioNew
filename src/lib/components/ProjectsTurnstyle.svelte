@@ -6,6 +6,7 @@
 	import fishmap from '$lib/imgs/fishmap.jpg';
 	import soundlens from '$lib/imgs/SoundLens.jpg';
 	import findReplace from '$lib/imgs/findReplace.png';
+	import dashboard from '$lib/imgs/dashboard.png';
 
 	let { aspect } = $props();
 	/*
@@ -34,6 +35,14 @@
 			image: fw_api_preview,
 			href: '/fw_api/index.html',
 			completed: 'Jul 14 2026'
+		},
+		{
+			name: 'CPU Dashboard',
+			subtitle:
+				"Monitor your computer's CPU, temperature, and RAM usage in real-time, built with Tauri, Svelte, and Rust.",
+			image: dashboard,
+			href: 'https://github.com/jonny11299/dashboard/tree/main',
+			completed: 'Aug 26 2026'
 		},
 		{
 			name: 'Album Concept Board',
