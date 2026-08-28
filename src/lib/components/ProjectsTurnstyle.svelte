@@ -1,6 +1,6 @@
 <script>
 	import color_lab_preview from '$lib/imgs/color_lab_preview.jpg';
-	import fw_api_preview from '$lib/imgs/fw_api_preview.jpg';
+	import fw_api_preview from '$lib/imgs/fw_api_preview.png';
 	import album_board from '$lib/imgs/faunixband_albums.jpg';
 	import bcd from '$lib/imgs/BelovedCommunityDoula.jpg';
 	import fishmap from '$lib/imgs/fishmap.jpg';

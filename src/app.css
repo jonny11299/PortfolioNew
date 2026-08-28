@@ -294,6 +294,22 @@
 	--font-scale: 1.05;
 }
 
+[data-theme='River Runs Deep'] {
+	/* Surfaces */
+	--bg: #333641;
+	--surface: #414556;
+
+	/* Text */
+	--text: #fbfbe2;
+	--text-muted: rgba(251, 251, 226, 0.78);
+	--text-hint: rgba(251, 251, 226, 0.68);
+
+	/* Brand */
+	--primary: #f8d64f;
+	--secondary: #acbee0;
+	--accent: #89e188;
+}
+
 /* --- custom textures: --- */
 
 .grain-bg {
