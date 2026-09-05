@@ -11,6 +11,34 @@
 	--space-2xl: clamp(4rem, 3.7692rem + 1.0256vw, 5rem);
 	--space-3xl: clamp(6rem, 5.6538rem + 1.5385vw, 7.5rem);
 
+	/* one-up space pairs — for transitions between steps */
+
+	--space-3xs-2xs: clamp(0.25rem, 0.1731rem + 0.3846vw, 0.625rem);
+	--space-2xs-xs: clamp(0.5rem, 0.4103rem + 0.4487vw, 0.9375rem);
+	--space-xs-s: clamp(0.75rem, 0.6474rem + 0.5128vw, 1.25rem);
+	--space-s-m: clamp(1rem, 0.8205rem + 0.8974vw, 1.875rem);
+	--space-m-l: clamp(1.5rem, 1.2949rem + 1.0256vw, 2.5rem);
+	--space-l-xl: clamp(2rem, 1.641rem + 1.7949vw, 3.75rem);
+	--space-xl-2xl: clamp(3rem, 2.5897rem + 2.0513vw, 5rem);
+	--space-2xl-3xl: clamp(4rem, 3.282rem + 3.5897vw, 7.5rem);
+
+	/* fluid type scale — 16px/1.2 at 320px, 18px/1.25 at 1880px */
+
+	--step--1: clamp(0.8333rem, 0.8196rem + 0.0684vw, 0.9rem);
+	--step-0: clamp(1rem, 0.9744rem + 0.1282vw, 1.125rem);
+	--step-1: clamp(1.2rem, 1.1577rem + 0.2115vw, 1.4063rem);
+	--step-2: clamp(1.44rem, 1.3748rem + 0.326vw, 1.7578rem);
+	--step-3: clamp(1.728rem, 1.6317rem + 0.4813vw, 2.1973rem);
+	--step-4: clamp(2.0736rem, 1.9356rem + 0.6902vw, 2.7466rem);
+
+	/* layout */
+
+	--wrapper-max: 75rem;
+	--measure: 68ch;
+	--gutter: var(--space-s-m);
+	--sidebar: 15rem;
+	--flow-space: var(--space-s);
+
 	/* coloring */
 
 	--bg: #fefeff;
@@ -395,8 +423,73 @@ body {
 }
 
 p {
-	font-size: calc(1.2rem * var(--font-scale));
+	font-size: var(--step-1);
+	line-height: 1.55;
+	text-wrap: pretty;
 }
+
+h1 {
+	font-size: var(--step-4);
+}
+h2 {
+	font-size: var(--step-3);
+}
+h3 {
+	font-size: var(--step-2);
+}
+h4 {
+	font-size: var(--step-1);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	line-height: 1.15;
+	letter-spacing: -0.01em;
+	text-wrap: balance;
+	margin: 0;
+}
+
+/* --- Layout primitives --- */
+
+/* Centred page shell. Everything on the site lives inside one of these. */
+.wrapper {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: var(--wrapper-max);
+	margin-inline: auto;
+	padding-inline: var(--gutter);
+}
+
+/*
+	Vertical rhythm. Instead of hand-picking a margin on every element, a
+	container opts into `.flow` and its children are spaced by one shared
+	token. Individual elements override with --flow-space.
+*/
+.flow > * {
+	margin-block: 0;
+}
+
+.flow > * + * {
+	margin-block-start: var(--flow-space, var(--space-s));
+}
+
+.flow > :is(h1, h2, h3, h4) + * {
+	--flow-space: var(--space-xs);
+}
+
+.flow > * + :is(h1, h2, h3, h4) {
+	--flow-space: var(--space-l);
+}
+
+/* Constrain running text to a comfortable line length. */
+.measure {
+	max-width: var(--measure);
+}
+
 
 a,
 p,
@@ -431,8 +524,8 @@ select {
 	border-radius: var(--border-radius);
 	min-width: 2rem;
 	min-height: 2rem;
-	padding: 1rem;
-	margin: 1rem;
+	box-sizing: border-box;
+	padding: var(--space-m);
 
 	color: var(--text);
 

@@ -1,24 +1,17 @@
 <script>
-	import { sizeStore } from '$lib/stores/size.svelte';
 	import { themeStore } from '$lib/stores/theme.svelte.js';
 
 	const themes = ['grid', 'notebook', 'frutiger', 'blue-glass', 'light', 'dark'];
 	let theme = $derived(themeStore.theme);
-	let aspect = $derived(sizeStore.aspect);
 </script>
 
-<nav class:applySticky={aspect !== 'phone'}>
-	<h1>Jonathan Bischoff</h1>
-	<p class="role">frontend engineer</p>
-
+<nav class="card">
 	<div class="links">
 		<a href="/">Home</a>
-		<div class="sections">
-			<a class="bulletted" href="/#projects">Projects</a>
-			<a class="bulletted" href="/#tools">Tools</a>
-			<a class="bulletted" href="/#ethos">Ethos</a>
-		</div>
-		<a href="/resume.pdf" target="_blank">Resume</a>
+		<a href="/#projects">Projects</a>
+		<a href="/#tools">Tools</a>
+		<a href="/#ethos">Ethos</a>
+		<a href="/resume.pdf" target="_blank" rel="noopener">Resume</a>
 		<a href="/#contact">Contact</a>
 	</div>
 
@@ -26,8 +19,6 @@
 	<div class="themes">
 		{#each themes as t}
 			<button
-				class:phoneWidth={aspect === 'phone'}
-				class:desktopWidth={aspect !== 'phone'}
 				onclick={() => themeStore.setTheme(t)}
 				aria-current={theme === t ? 'true' : undefined}
 			>
@@ -40,67 +31,29 @@
 <style>
 	nav {
 		z-index: 100;
-		max-width: var(--sticky-max-width);
-		padding: var(--padding);
+		padding: var(--space-s-m);
+	}
 
-		background: var(--surface);
-		border: var(--border-width) solid var(--border);
-		border-radius: var(--border-radius);
-		color: var(--text);
-
-		:global([data-theme='light']) & {
-			box-shadow: 2px 3px;
+	/*
+		Sticky only once the sidebar actually sits beside the content. Stacked
+		above that width it would pin over the page as you scroll.
+	*/
+	@media (min-width: 60rem) {
+		nav {
+			position: sticky;
+			top: var(--space-s);
 		}
-
-		:global([data-theme='frutiger']) & {
-			background-image: linear-gradient(
-				to bottom,
-				rgba(255, 255, 255, 0.32) 0%,
-				rgba(255, 255, 255, 0.18) 25%,
-				rgba(255, 255, 255, 0.04) 70%,
-				rgba(255, 255, 255, 0.14) 100%
-			);
-			box-shadow:
-				inset 0 1px 0 rgba(255, 255, 255, 0.7),
-				0 2px 8px rgba(0, 40, 70, 0.35);
-			backdrop-filter: blur(10px) saturate(1.4);
-		}
-	}
-
-	.applySticky {
-		position: sticky;
-		top: 1rem;
-	}
-
-	/* --- identity --- */
-	h1 {
-		margin: 0;
-		font-size: 1.35rem;
-		font-weight: 600;
-		line-height: 1.15;
-		letter-spacing: -0.01em;
-	}
-
-	.role {
-		margin: 0.35rem 0 0;
-		font-size: 0.8rem;
-		letter-spacing: 0.06em;
-		color: var(--text-muted);
 	}
 
 	/* --- links --- */
 	.links {
 		display: flex;
 		flex-direction: column;
-		gap: 0.4rem;
-
-		margin-top: 1.1rem;
-		padding-top: 1.1rem;
-		border-top: 1px solid var(--divider);
+		gap: var(--space-2xs);
 	}
 
 	.links a {
-		font-size: 0.95rem;
+		font-size: var(--step-0);
 		font-weight: 500;
 		color: var(--secondary);
 		text-decoration: none;
@@ -118,43 +71,48 @@
 	.sections {
 		display: flex;
 		flex-direction: column;
-		gap: 0.4rem;
-		margin-left: 0.4rem;
+		gap: var(--space-2xs);
+		margin-left: var(--space-2xs);
 	}
+
 	.bulletted::before {
 		content: '• ';
 	}
 
 	/* --- theme switcher --- */
 	.label {
-		margin: 1.1rem 0 0.6rem;
-		padding-top: 1.1rem;
+		margin: var(--space-s) 0 var(--space-2xs);
+		padding-top: var(--space-s);
 		border-top: 1px solid var(--divider);
 
 		font-family: var(--font-mono);
-		font-size: calc(0.7rem * var(--font-scale));
+		font-size: var(--step--1);
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 	}
 
+	/*
+		One button per row at full width, so switching themes cannot reflow the
+		buttons out from under the cursor.
+	*/
 	.themes {
-		display: flex;
-		flex-direction: column;
-		flex-wrap: wrap;
-		gap: 0.35rem;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-3xs);
 	}
 
 	.themes button {
+		width: 100%;
 		margin: 0;
-		padding: 0.15rem 0.55rem;
+		padding: 0.15rem var(--space-2xs);
 
 		border: 1px solid var(--divider);
 		border-radius: var(--border-radius);
 		background: transparent;
 
 		font-family: var(--font-mono);
-		font-size: 0.72rem;
+		font-size: var(--step--1);
 		line-height: 1.6;
 		color: var(--text-muted);
 		cursor: pointer;
@@ -162,13 +120,6 @@
 			color var(--transition-time) ease,
 			border-color var(--transition-time) ease,
 			background-color var(--transition-time) ease;
-	}
-
-	.phoneWidth {
-		width: 100%;
-	}
-	.desktopWidth {
-		width: 61%;
 	}
 
 	.themes button:hover {
@@ -181,5 +132,35 @@
 		color: var(--secondary);
 		border-color: var(--secondary);
 		background: color-mix(in srgb, var(--secondary) 15%, transparent);
+	}
+	/*
+		Below 60rem the nav is a full-width bar rather than a sidebar, so links
+		and theme buttons run horizontally instead of stacking.
+	*/
+	@media (max-width: 59.999rem) {
+		.links {
+			flex-direction: row;
+			flex-wrap: wrap;
+			align-items: center;
+			column-gap: var(--space-s);
+		}
+
+		.sections {
+			flex-direction: row;
+			flex-wrap: wrap;
+			align-items: center;
+			column-gap: var(--space-s);
+			margin-left: 0;
+		}
+
+		.themes {
+			display: flex;
+			flex-wrap: wrap;
+		}
+
+		.themes button {
+			flex: 1 1 auto;
+			width: auto;
+		}
 	}
 </style>

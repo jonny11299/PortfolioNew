@@ -2,6 +2,7 @@
 
 <script>
 	import { PUBLIC_FORM_ACCESS_KEY as FORM_KEY } from '$env/static/public';
+	import { PROFILES } from '$lib/seo.js';
 
 	let name = $state('');
 	let email = $state('');
@@ -44,7 +45,7 @@
 	}
 </script>
 
-<h1>Contact Me</h1>
+<h2>Contact Me</h2>
 
 <form onsubmit={submit}>
 	<label class="formLabel" for="name">Name:</label>
@@ -83,68 +84,22 @@
 	</p>
 </form>
 
+<!--
+	rel="me" marks these as the same person publishing this page. It only
+	counts as verification when the profile links back here too, so both
+	profiles should carry this site's URL.
+-->
+<p class="elsewhere">
+	Also find me on
+	<a href={PROFILES.github} target="_blank" rel="me noopener">GitHub</a>
+	and
+	<a href={PROFILES.linkedin} target="_blank" rel="me noopener">LinkedIn</a>.
+</p>
+
 <style>
-	.container {
-		max-width: 50vw;
-		margin-inline: auto;
-		height: 100%;
-		padding: var(--padding);
-		background: transparent;
-		color: var(--text);
-		border: none; /* 2px solid black; */
-		border-radius: 0;
-		overflow: hidden;
-
-		display: flex;
-		flex-direction: column;
-
-		justify-content: center;
-		align-items: center;
-	}
-
-	.passageFullWidth {
-		background-color: var(--surface);
-		margin-top: 3rem;
-		margin-bottom: 60vh;
-		padding: 1.5rem;
-		border: var(--border-width) solid var(--border);
-		border-radius: var(--border-radius);
-		align-self: stretch;
-
-		:global([data-theme='light']) & {
-			box-shadow: 2px 3px;
-		}
-
-		:global([data-theme='frutiger']) & {
-			background-image: linear-gradient(
-				to bottom,
-				rgba(255, 255, 255, 0.32) 0%,
-				rgba(255, 255, 255, 0.18) 25%,
-				rgba(255, 255, 255, 0.04) 70%,
-				rgba(255, 255, 255, 0.14) 100%
-			);
-			box-shadow:
-				inset 0 1px 0 rgba(255, 255, 255, 0.7),
-				0 2px 8px rgba(0, 40, 70, 0.35);
-			backdrop-filter: blur(10px) saturate(1.4);
-		}
-	}
-
-	h1 {
-		margin: 0 0 2rem;
-		font-size: 2.25rem;
+	h2 {
+		margin: 0 0 var(--space-l);
 		font-weight: 600;
-		letter-spacing: -0.01em;
-	}
-	h3 {
-		margin: 2.5rem 0 1rem;
-		font-family: var(--font-mono);
-		font-size: calc(1rem * var(--font-scale));
-		font-weight: 500;
-		letter-spacing: 0.1em;
-		color: var(--text-muted);
-		padding-bottom: 0.6rem;
-		border-bottom: 1px solid var(--divider);
 	}
 
 	form {
@@ -153,27 +108,27 @@
 	}
 
 	.formLabel {
-		margin: 2.5rem 0 1rem;
+		margin: var(--space-l) 0 var(--space-xs);
 		font-family: var(--font-mono);
-		font-size: calc(1rem * var(--font-scale));
+		font-size: var(--step-0);
 		font-weight: 500;
 		letter-spacing: 0.1em;
 		color: var(--text-muted);
-		padding-bottom: 0.6rem;
+		padding-bottom: var(--space-2xs);
 		border-bottom: 1px solid var(--divider);
 	}
 
-	.frame {
-		width: 100%;
-		height: 100%;
-		min-height: 90vh;
-		max-height: 95vh;
+	.elsewhere {
+		margin: var(--space-l) 0 0;
+		padding-top: var(--space-s);
+		border-top: 1px solid var(--divider);
+		font-size: var(--step-0);
+		color: var(--text-muted);
 	}
 
 	.submitButton {
-		margin-top: 3rem;
-		font-size: 2em;
-		border-width: 2 * var(--border-width);
+		margin-top: var(--space-l);
+		font-size: var(--step-2);
 		font-family: var(--font-sans);
 	}
 </style>

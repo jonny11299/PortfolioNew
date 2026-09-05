@@ -2,14 +2,13 @@
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.png';
 	import { themeStore } from '$lib/stores/theme.svelte.js';
-	import { sizeStore } from '$lib/stores/size.svelte.js';
 	import Nav from '$lib/components/Nav.svelte';
 	import { onMount } from 'svelte';
-
-	let aspect = $derived(sizeStore.aspect);
+	import { logVisit } from '$lib/utils/engagement';
 
 	onMount(() => {
 		themeStore.init();
+		logVisit();
 
 		console.log(
 			'%c Welcome to my console logs. You must be a curious fellow.',
@@ -26,13 +25,6 @@
 		console.log(
 			`We're logging from "routes/+layout.svelte," which is the landing page for the application.`
 		);
-		console.log(
-			`First, let's check the screen size of the user so we can deliver the proper layout dimensions.`
-		);
-
-		sizeStore.init();
-
-		return () => sizeStore.destroy();
 	});
 
 	// import fonts:
@@ -81,46 +73,86 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<!-- nav -->
-<!-- children -->
+<header class="siteHeader">
+	<div class="wrapper headerInner">
+		<div class="identity">
+			<h1 class="name"><a href="/">Jonathan Bischoff</a></h1>
+			<p class="role">Front-End Engineer</p>
+		</div>
+	</div>
+</header>
 
-<!-- Control the main layout -->
-<div
-	class="wrapper"
-	class:desktop={aspect === 'desktop'}
-	class:square={aspect === 'square'}
-	class:phone={aspect === 'phone'}
->
-	<Nav {aspect} />
-	{@render children()}
+<div class="wrapper layout">
+	<Nav />
+	<main class="content">
+		{@render children()}
+	</main>
 </div>
 
 <style>
-	.wrapper {
-		box-sizing: border-box;
-		max-width: 100%;
-		max-height: 100%;
-		padding: 1rem;
+	.siteHeader {
+		border-bottom: 1px solid var(--divider);
+		margin-bottom: var(--space-l);
 	}
 
-	.desktop {
-		display: grid;
-		grid-template-columns: 260px 1fr 260px;
-		gap: 0rem;
-		align-items: start;
+	.headerInner {
+		padding-block: var(--space-s);
 	}
 
-	.square {
-		display: grid;
-		grid-template-columns: 260px 1fr;
-		gap: 0rem;
-		align-items: start;
-	}
-
-	.phone {
+	.identity {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
-		align-items: center;
+		gap: var(--space-3xs);
+		width: fit-content;
+	}
+
+	/* The page's only h1: the subject of the document is the person. */
+	.name {
+		margin: 0;
+		font-size: var(--step-2);
+		font-weight: 600;
+		line-height: 1.1;
+		letter-spacing: -0.015em;
+	}
+
+	.name a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.name a:hover,
+	.name a:focus-visible {
+		text-decoration: underline;
+		text-underline-offset: 0.15em;
+	}
+
+	.role {
+		margin: 0;
+		font-family: var(--font-mono);
+		font-size: var(--step--1);
+		letter-spacing: 0.08em;
+		color: var(--text-muted);
+	}
+
+	.layout {
+		display: grid;
+		gap: var(--space-l);
+		align-items: start;
+		padding-bottom: var(--space-2xl);
+	}
+
+	/*
+		Single breakpoint: below this the sidebar cannot sit beside the content
+		without squeezing the measure, so it stacks. Everything else is fluid.
+	*/
+	@media (min-width: 60rem) {
+		.layout {
+			grid-template-columns: var(--sidebar) minmax(0, 1fr);
+			gap: var(--space-xl);
+		}
+	}
+
+	.content {
+		min-width: 0;
 	}
 </style>

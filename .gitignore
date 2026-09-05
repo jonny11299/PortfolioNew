@@ -33,3 +33,6 @@ Thumbs.db
 
 # dumps
 dumps/
+
+# claude's tooling
+.claude/

@@ -1,102 +1,17 @@
 <script>
-	import color_lab_preview from '$lib/imgs/color_lab_preview.jpg';
-	import fw_api_preview from '$lib/imgs/fw_api_preview.png';
-	import album_board from '$lib/imgs/faunixband_albums.jpg';
-	import bcd from '$lib/imgs/BelovedCommunityDoula.jpg';
-	import fishmap from '$lib/imgs/fishmap.jpg';
-	import soundlens from '$lib/imgs/SoundLens.jpg';
-	import findReplace from '$lib/imgs/findReplace.png';
-	import dashboard from '$lib/imgs/dashboard.png';
-
-	let { aspect } = $props();
-	/*
-	CPU Dashboard
-	Beloved Community Doula
-	Spotify --> Tidal Playlist Migrator
-	in-progress:
-	Watersheds
-	*/
-	let shipped = [
-		{
-			name: 'Color Lab',
-			subtitle: 'Design website colorschemes by snapping a picture! 📸',
-			image: color_lab_preview,
-			href: '/color_lab/index.html',
-			completed: 'Jul 6 2026'
-		},
-		{
-			name: 'FreeWheel Creative Approvals',
-			subtitle:
-				'Navigate FreeWheel Adserver in a custom interface, enhanced for your workflow. Built in 5 days using the FreeWheel API.',
-			subtitleLink: {
-				text: 'FreeWheel API',
-				href: 'https://api-docs.freewheel.tv/publisher/reference/programmatic-client-creative-api-v4'
-			},
-			image: fw_api_preview,
-			href: '/fw_api/index.html',
-			completed: 'Jul 14 2026'
-		},
-		{
-			name: 'CPU Dashboard',
-			subtitle:
-				"Monitor your computer's CPU, temperature, and RAM usage in real-time, built with Tauri, Svelte, and Rust.",
-			image: dashboard,
-			href: 'https://github.com/jonny11299/dashboard/tree/main',
-			completed: 'Aug 26 2026'
-		},
-		{
-			name: 'Album Concept Board',
-			subtitle:
-				'Upload music and listen to custom playlists, built in vanilla HTML and JS, using an AWS Bucket for storage, and Google Sheets for a database!',
-			image: album_board,
-			href: '/album',
-			completed: 'Jan 27 2026'
-		},
-		{
-			name: 'Beloved Community Doula',
-			subtitle: "A website for my girlfriend's Doula practice, built in vanilla HTML.",
-			image: bcd,
-			href: 'https://belovedcommunitydoula.com/',
-			completed: 'Sep 26 2025'
-		},
-		{
-			name: 'Vast Macro Replacement',
-			subtitle:
-				'Format advertising VAST links for your organization at the click of a button, using a custom ruleset',
-			image: findReplace,
-			href: '/find_and_replace/fr.html',
-			completed: 'Apr 7 2026'
-		},
-		{
-			name: 'SoundLens',
-			subtitle: 'A fun audiovisual sketch that animates music in the shape of a symmetric flower.',
-			image: soundlens,
-			href: '/sound_lens/sound_lens.html',
-			completed: 'Nov 21 2018'
-		}
-	];
-	let inProgress = [
-		{
-			name: 'Fish Map',
-			subtitle:
-				'A map showing the waterbodies, rivers, and watersheds of a particular quadrant in Western Washington. Built using Python with GeoPandas, from public WSDOT geodata packages, as part of an ongoing effort to protect Coho Salmon from toxic runoff chemicals.',
-			image: fishmap,
-			href: '/fish_app/fishApp.html',
-			last_updated: 'Aug 8 2025'
-		}
-	];
-	let conceptualized = [];
+	import { shipped, inProgress } from '$lib/data/projects.js';
+	import { iso } from '$lib/date.js';
 </script>
 
 {#snippet previewRow(items)}
-	<div class="previewContainer" class:previewContainerPhone={aspect === 'phone'}>
+	<ul class="previewContainer">
 		{#each items as item (item.name)}
-			<div class="preview">
+			<li class="preview">
 				<div class="clickable">
 					<div class="thumb">
-						<img src={item.image} alt="" loading="lazy" />
+						<img src={item.image} alt={item.alt ?? ''} loading="lazy" />
 					</div>
-					<a class="name" target="_blank" href={item.href}>{item.name}</a>
+					<a class="name" target="_blank" rel="noopener" href={item.href}>{item.name}</a>
 				</div>
 				<p class="subtitle">
 					{#if item.subtitleLink}
@@ -111,17 +26,17 @@
 				</p>
 				<p class="dateUpdated">
 					{#if item.completed}
-						launched {item.completed}
+						launched <time datetime={iso(item.completed)}>{item.completed}</time>
 					{/if}
 					{#if item.last_updated}
-						last updated {item.last_updated}
+						last updated <time datetime={iso(item.last_updated)}>{item.last_updated}</time>
 					{/if}
 				</p>
-			</div>
+			</li>
 		{/each}
-	</div>
+	</ul>
 {/snippet}
-<h1>Projects</h1>
+<h2>Projects</h2>
 <h3>Shipped</h3>
 {@render previewRow(shipped)}
 <h3>In-Progress</h3>
@@ -133,11 +48,9 @@
  -->
 
 <style>
-	h1 {
-		margin: 0 0 2rem;
-		font-size: 2.25rem;
+	h2 {
+		margin: 0 0 var(--space-l);
 		font-weight: 600;
-		letter-spacing: -0.01em;
 		overflow-wrap: anywhere;
 	}
 	h3 {
@@ -152,15 +65,17 @@
 		overflow-wrap: anywhere;
 	}
 	/* --- row --- */
+	/* auto-fit already collapses to a single column when it runs out of room,
+	   so this needs no breakpoint. */
 	.previewContainer {
+		list-style: none;
+		margin: 0;
+		padding: 0;
 		display: grid;
 		width: 100%;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: 1.5rem;
+		grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+		gap: var(--space-m);
 		align-items: start;
-	}
-	.previewContainerPhone {
-		grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
 	}
 	/* --- card --- */
 	.preview {
