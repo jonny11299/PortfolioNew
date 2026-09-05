@@ -113,7 +113,12 @@
 			box-shadow:
 				inset 0 1px 0 rgba(255, 255, 255, 0.7),
 				0 2px 8px rgba(0, 40, 70, 0.35);
-			backdrop-filter: blur(10px) saturate(1.4);
+			/*
+				No backdrop-filter here on purpose. This sits inside an already
+				frosted .card and is then covered by an opaque image, so the blur
+				was invisible — but with a fixed background it still recomputed on
+				every scroll frame, 26 times over. The gloss above is what reads.
+			*/
 		}
 	}
 	.thumb img {
