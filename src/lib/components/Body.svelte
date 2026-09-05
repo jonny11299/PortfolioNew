@@ -260,7 +260,7 @@
 		padding: var(--padding);
 		background: transparent;
 		color: var(--text);
-		border: none; /* 2px solid black; */
+		border: 2px solid white;
 		border-radius: 0;
 		overflow: hidden;
 

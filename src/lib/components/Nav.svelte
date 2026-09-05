@@ -1,10 +1,10 @@
 <script>
+	import { sizeStore } from '$lib/stores/size.svelte';
 	import { themeStore } from '$lib/stores/theme.svelte.js';
-
-	let { aspect } = $props();
 
 	const themes = ['grid', 'notebook', 'frutiger', 'blue-glass', 'light', 'dark'];
 	let theme = $derived(themeStore.theme);
+	let aspect = $derived(sizeStore.aspect);
 </script>
 
 <nav class:applySticky={aspect !== 'phone'}>
