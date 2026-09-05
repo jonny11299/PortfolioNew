@@ -1,6 +1,5 @@
 import { json, error } from '@sveltejs/kit';
 import { USE_MOCK } from '$env/static/private';
-import { FOR_TEAM } from '$env/static/private';
 import { BLOB_SECRET } from '$env/static/private';
 import { BLOB_DEPLOYMENT } from '$env/static/private';
 

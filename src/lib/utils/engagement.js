@@ -88,7 +88,7 @@ export async function logVisit() {
 
 		console.log(`%c Success on post.`, 'color: green');
 	} catch (err) {
-		console.log(`%c Failure on post.`, 'color: red');
+		// console.log(`%c Failure on post.`, 'color: red');
 	}
 }
 

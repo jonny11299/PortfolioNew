@@ -36,3 +36,7 @@ dumps/
 
 # claude's tooling
 .claude/
+
+
+# hosting with github pages, so we can't have server functions
+src/routes/api/
