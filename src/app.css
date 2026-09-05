@@ -669,7 +669,11 @@ textarea:disabled {
 	box-shadow:
 		inset 0 1px 0 rgba(255, 255, 255, 0.7),
 		0 2px 8px rgba(0, 40, 70, 0.35);
-	backdrop-filter: blur(10px) saturate(1.4);
+	/*
+		No backdrop-filter: these fields sit inside an already frosted .card,
+		so blurring an already blurred backdrop reads as no change while
+		costing a full blur pass per field on every scroll frame.
+	*/
 }
 
 .onelineForm {
