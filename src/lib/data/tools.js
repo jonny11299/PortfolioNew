@@ -63,20 +63,6 @@ export const languages = [
 
 export const frameworks = [
 	{
-		name: 'Svelte 5',
-		subtitle: 'Component Framework',
-		purpose: 'Compiles to vanilla JS and uses clean syntax',
-		image: svelte,
-		href: 'https://svelte.dev'
-	},
-	{
-		name: 'SvelteKit',
-		subtitle: 'Full-Stack Framework',
-		purpose: 'Handles routing, like Next.js for Svelte',
-		image: svelte,
-		href: 'https://svelte.dev/docs/kit/introduction#What-is-SvelteKit'
-	},
-	{
 		name: 'React',
 		subtitle: 'Framework',
 		purpose: 'Matches most team stacks',
@@ -89,6 +75,20 @@ export const frameworks = [
 		purpose: 'Powers React apps',
 		image: nextjs,
 		href: 'https://nextjs.org/'
+	},
+	{
+		name: 'Svelte 5',
+		subtitle: 'Component Framework',
+		purpose: 'Compiles to vanilla JS and uses clean syntax',
+		image: svelte,
+		href: 'https://svelte.dev'
+	},
+	{
+		name: 'SvelteKit',
+		subtitle: 'Full-Stack Framework',
+		purpose: 'Handles routing, like Next.js for Svelte',
+		image: svelte,
+		href: 'https://svelte.dev/docs/kit/introduction#What-is-SvelteKit'
 	},
 	{
 		name: 'GeoPandas',

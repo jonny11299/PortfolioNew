@@ -3,6 +3,7 @@
 	import favicon from '$lib/assets/favicon.png';
 	import { themeStore } from '$lib/stores/theme.svelte.js';
 	import Nav from '$lib/components/Nav.svelte';
+	import SocialIcon from '$lib/components/SocialIcon.svelte';
 	import { onMount } from 'svelte';
 	import { logVisit } from '$lib/utils/engagement';
 
@@ -76,8 +77,14 @@
 <header class="siteHeader">
 	<div class="wrapper headerInner">
 		<div class="identity">
-			<h1 class="name"><a href="/">Jonathan Bischoff</a></h1>
-			<p class="role">Front-End Engineer</p>
+			<div class="identityRow nameRow">
+				<h1 class="name"><a href="/">Jonathan Bischoff</a></h1>
+				<SocialIcon platform="linkedin" />
+			</div>
+			<div class="identityRow roleRow">
+				<p class="role">Front-End Engineer</p>
+				<SocialIcon platform="github" />
+			</div>
 		</div>
 	</div>
 </header>
@@ -97,13 +104,32 @@
 
 	.headerInner {
 		padding-block: var(--space-s);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-m);
 	}
 
 	.identity {
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-3xs);
-		width: fit-content;
+		flex: 1;
+	}
+
+	.identityRow {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-m);
+	}
+
+	.identityRow.nameRow {
+		font-size: var(--step-2);
+	}
+
+	.identityRow.roleRow {
+		font-size: var(--step--1);
 	}
 
 	/* The page's only h1: the subject of the document is the person. */

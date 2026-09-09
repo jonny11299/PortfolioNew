@@ -84,18 +84,6 @@
 	</p>
 </form>
 
-<!--
-	rel="me" marks these as the same person publishing this page. It only
-	counts as verification when the profile links back here too, so both
-	profiles should carry this site's URL.
--->
-<p class="elsewhere">
-	Also find me on
-	<a href={PROFILES.github} target="_blank" rel="me noopener">GitHub</a>
-	and
-	<a href={PROFILES.linkedin} target="_blank" rel="me noopener">LinkedIn</a>.
-</p>
-
 <style>
 	h2 {
 		margin: 0 0 var(--space-l);
