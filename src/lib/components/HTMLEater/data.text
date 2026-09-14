@@ -1,0 +1,119 @@
+	<div style="padding:6px">
+   <div class="gb_Ra gb_Nd gb_Jb gb_e gb_cb" id="gb">
+    <div class="gb_be gb_Fb gb_2d" data-ogsr-up="">
+     <div>
+      <div class="gb_R gb_8 gb_1f gb_8f" data-ogbl="">
+       <div class="gb_7 gb_8">
+        <a aria-label="Gmail " class="gb_6" data-pid="23" href="https://mail.google.com/mail/&amp;ogbl" target="_top">
+         Gmail
+        </a>
+       </div>
+       <div class="gb_7 gb_8">
+        <a aria-label="Search for Images " class="gb_6" data-pid="2" href="https://www.google.com/imghp?hl=en&amp;ogbl" target="_top">
+         Images
+        </a>
+       </div>
+      </div>
+     </div>
+     <div class="gb_Md">
+      <div class="gb_sd">
+       <div class="gb_L gb_Ed gb_8" data-ogsr-alt="" id="gbwa">
+        <div class="gb_D">
+         <a aria-expanded="false" aria-label="Google apps" class="gb_C" href="https://www.google.com/intl/en/about/products" role="button" tabindex="0">
+          <svg aria-hidden="true" class="gb_H" focusable="false" viewbox="0 0 24 24">
+           <path d="M6,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM6,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM16,6c0,1.1 0.9,2 2,2s2,-0.9 2,-2 -0.9,-2 -2,-2 -2,0.9 -2,2zM12,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,14c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM18,20c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2z">
+           </path>
+           <image alt="" height="24" src="https://ssl.gstatic.com/gb/images/bar/al-icon.png" style="border:none;display:none \9" width="24"/>
+          </svg>
+         </a>
+        </div>
+       </div>
+      </div>
+      <a aria-label="Sign in" class="gb_4a gb_6d gb_Xd gb_Od" href="https://accounts.google.com/ServiceLogin?hl=en&amp;passive=true&amp;continue=https://www.google.com/&amp;ec=GAZAmgQ" target="_top">
+       <span class="gb_le">
+        Sign in
+       </span>
+      </a>
+     </div>
+    </div>
+   </div>
+  </div>
+  <center>
+   <br clear="all" id="lgpd"/>
+   <div>
+    <img alt="Google" height="92" id="hplogo" src="/images/branding/google_wordmark/v1/1x/googlelogo_color_white_background_272x92dp.png" style="padding:28px 0 14px" width="272"/>
+    <br/>
+    <br/>
+   </div>
+   <form action="/search" name="f">
+    <table cellpadding="0" cellspacing="0">
+     <tr valign="top">
+      <td width="25%">
+      </td>
+      <td align="center" nowrap="">
+       <input name="ie" type="hidden" value="ISO-8859-1"/>
+       <input name="hl" type="hidden" value="en"/>
+       <input name="source" type="hidden" value="hp"/>
+       <input name="biw" type="hidden"/>
+       <input name="bih" type="hidden"/>
+       <div class="ds" style="height:32px;margin:4px 0">
+        <input autocomplete="off" class="lst" maxlength="2048" name="q" size="57" style="margin:0;padding:5px 8px 0 6px;vertical-align:top;color:#1f1f1f" title="Google Search" value=""/>
+       </div>
+       <br style="line-height:0"/>
+       <span class="ds">
+        <span class="lsbb">
+         <input class="lsb" name="btnG" type="submit" value="Google Search"/>
+        </span>
+       </span>
+       <span class="ds">
+        <span class="lsbb">
+         <input class="lsb" id="tsuid_qVSoapfwN8fJ0PEPuM6HoAg_1" name="btnI" type="submit" value="I'm Feeling Lucky"/>
+         <script nonce="oPjAJ-CVqn20dk2SIo_ExQ">
+          (function(){var id='tsuid_qVSoapfwN8fJ0PEPuM6HoAg_1';document.getElementById(id).onclick = function(){if (this.form.q.value){this.checked = 1;if (this.form.iflsig)this.form.iflsig.disabled = false;}
+else top.location='/doodles/';};})();
+         </script>
+         <input name="iflsig" type="hidden" value="ABILxe8AAAAAaqhiuQAy1dwEtZzsCfILjFK9eBYSpIwN"/>
+        </span>
+       </span>
+      </td>
+      <td align="left" class="fl sblc" nowrap="" width="25%">
+       <a href="/advanced_search?hl=en&amp;authuser=0">
+        Advanced search
+       </a>
+      </td>
+     </tr>
+    </table>
+    <input id="gbv" name="gbv" type="hidden" value="1"/>
+    <script nonce="oPjAJ-CVqn20dk2SIo_ExQ">
+     (function(){var a,b="1";if(document&&document.getElementById)if(typeof XMLHttpRequest!="undefined")b="2";else if(typeof ActiveXObject!="undefined"){var c,d,e=["MSXML2.XMLHTTP.6.0","MSXML2.XMLHTTP.3.0","MSXML2.XMLHTTP","Microsoft.XMLHTTP"];for(c=0;d=e[c++];)try{new ActiveXObject(d),b="2"}catch(h){}}a=b;if(a=="2"&&location.search.indexOf("&gbv=2")==-1){var f=google.gbvu,g=document.getElementById("gbv");g&&(g.value=a);f&&window.setTimeout(function(){location.href=f},0)};}).call(this);
+    </script>
+   </form>
+   <div style="font-size:83%;min-height:3.5em">
+    <br/>
+   </div>
+   <span id="footer">
+    <div style="font-size:10pt">
+     <div id="WqQANb" style="margin:19px auto;text-align:center">
+      <a href="/intl/en/ads/">
+       Advertising
+      </a>
+      <a href="/services/">
+       Business Solutions
+      </a>
+      <a href="/intl/en/about.html">
+       About Google
+      </a>
+     </div>
+    </div>
+    <p style="font-size:8pt;color:#636363">
+     © 2026 -
+     <a href="/intl/en/policies/privacy/">
+      Privacy
+     </a>
+     -
+     <a href="/intl/en/policies/terms/">
+      Terms
+     </a>
+    </p>
+   </span>
+  </center>

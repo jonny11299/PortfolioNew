@@ -1,0 +1,244 @@
+// Plays one note per character, timed on the audio clock.
+//
+// Tone's Transport schedules each step slightly ahead of time (the context's lookahead) with an
+// exact audio timestamp, so notes land evenly regardless of main-thread load. Visual updates are
+// queued with Tone.Draw for the same timestamp and fire on the nearest animation frame — they can
+// be a frame late, but never pull the audio off.
+//
+// Tone is imported lazily: pages are prerendered, and there's no AudioContext on the server.
+
+import { drums, charToDrum } from './drums.js';
+
+const NOTE_OFFSETS = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 };
+const MAX_MIDI = 127;
+const A_CODE = 'a'.charCodeAt(0);
+
+const MIN_STEP_MS = 5; // an interval of 0 would make the loop spin forever
+const MIN_TIME_MS = 1; // envelope stages can't be zero-length
+
+// Times in ms, sustain 0–1, volume 0–100, filter frequency in Hz, filter gain in dB
+export const defaults = {
+	stepInterval: 40,
+	tonalCenter: 'A3', // the note 'a' plays; every character is counted from it
+	volume: 100,
+	drumVolume: 0.3, // gain on all drums, relative to the waves
+	// hold: how long a note sits at the sustain level before releasing
+	voice: { attack: 5, decay: 100, sustain: 0.1, hold: 0, release: 50 },
+	sawFilter: { frequency: 800, gain: -12 }
+};
+
+const settings = structuredClone(defaults);
+let tonalCenterMidi = noteToMidi(settings.tonalCenter);
+
+let Tone;
+// One PolySynth per wave type: all voices in a PolySynth share the same oscillator type
+let synths;
+let sawFilter;
+// One NoiseSynth per drum: noise can't go in a PolySynth, and separate instruments don't cut each
+// other off (a repeated drum does, like a real hihat)
+let noises;
+let drumBus;
+let loop;
+let loading;
+
+// Invalid input (e.g. an empty number field) keeps the previous value
+const clamp = (value, previous, min, max = Infinity) =>
+	Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : previous;
+
+/** MIDI number for a note name like 'C2', 'F#3' or 'Bb1' (C4 = 60), or null if it isn't one. */
+export function noteToMidi(name) {
+	const match = /^\s*([a-g])([#b]?)(-?\d)\s*$/i.exec(name ?? '');
+	if (!match) return null;
+
+	const [, letter, accidental, octave] = match;
+	const shift = { '#': 1, b: -1, B: -1 }[accidental] ?? 0;
+	const midi = (Number(octave) + 1) * 12 + NOTE_OFFSETS[letter.toLowerCase()] + shift;
+	return midi >= 0 && midi <= MAX_MIDI ? midi : null;
+}
+
+/** MIDI note for a character, or null for whitespace (a silent step). */
+export function charToMidi(char) {
+	if (/\s/.test(char)) return null;
+
+	// 'a' is the tonal center, one semitone per character code away from 'a'
+	const midi = tonalCenterMidi + char.charCodeAt(0) - A_CODE;
+
+	// Out-of-range characters move by whole octaves, keeping their pitch class
+	if (midi < tonalCenterMidi) return midi + 12 * Math.ceil((tonalCenterMidi - midi) / 12);
+	if (midi > MAX_MIDI) return midi - 12 * Math.ceil((midi - MAX_MIDI) / 12);
+	return midi;
+}
+
+/** Loads Tone and builds the synth. Safe to call repeatedly; call early so play() starts instantly. */
+export function load() {
+	loading ??= init();
+	return loading;
+}
+
+async function init() {
+	Tone = await import('tone');
+
+	// sawtooth is bright, so it runs through a high shelf to tame the highs
+	sawFilter = new Tone.Filter({ type: 'highshelf' }).toDestination();
+
+	synths = {};
+	// sawtooth8 is built from only the first 8 harmonics, so it's softer than a full sawtooth
+	const oscillators = { sine: 'sine', triangle: 'triangle', sawtooth: 'sawtooth8' };
+	for (const [wave, type] of Object.entries(oscillators)) {
+		synths[wave] = new Tone.PolySynth(Tone.Synth, { oscillator: { type } });
+		synths[wave].volume.value = -12; // short steps stack several voices at once
+		synths[wave].connect(wave === 'sawtooth' ? sawFilter : Tone.getDestination());
+	}
+
+	// every drum feeds one gain, so drum volume scales them together against the waves
+	drumBus = new Tone.Gain().toDestination();
+	noises = {};
+	for (const [name, { filter, envelope, level }] of Object.entries(drums)) {
+		const output = new Tone.Filter(filter).connect(drumBus);
+		noises[name] = new Tone.NoiseSynth({
+			noise: { type: 'white' },
+			// sustain 0: the noise stops on its own once attack and decay finish
+			envelope: { sustain: 0, release: 0.005, ...envelope },
+			volume: level
+		}).connect(output);
+	}
+
+	applyVoice();
+	applyFilter();
+	applyDrumVolume();
+	applyVolume();
+}
+
+function applyVoice() {
+	if (!synths) return;
+	const { attack, decay, sustain, release } = settings.voice;
+	const envelope = { attack: attack / 1000, decay: decay / 1000, sustain, release: release / 1000 };
+	for (const synth of Object.values(synths)) synth.set({ envelope });
+}
+
+function applyFilter() {
+	if (!sawFilter) return;
+	// ramp rather than jump, so edits while playing don't click
+	sawFilter.frequency.rampTo(settings.sawFilter.frequency, 0.05);
+	sawFilter.gain.rampTo(settings.sawFilter.gain, 0.05);
+}
+
+function applyDrumVolume() {
+	if (!drumBus) return;
+	drumBus.gain.rampTo(settings.drumVolume, 0.05);
+}
+
+function applyVolume() {
+	if (!synths) return;
+	// squared so the control sounds even to the ear; 100 is unity gain, 0 mutes
+	Tone.getDestination().volume.value = Tone.gainToDb((settings.volume / 100) ** 2);
+}
+
+/** Time between steps in ms. Applies immediately, including mid-playback. */
+export function setStepInterval(ms) {
+	settings.stepInterval = clamp(ms, settings.stepInterval, MIN_STEP_MS);
+	if (loop) loop.interval = settings.stepInterval / 1000;
+}
+
+/** Drum level relative to the waves, 0–1. 0.5 is half the amplitude (-6 dB). */
+export function setDrumVolume(level) {
+	settings.drumVolume = clamp(level, settings.drumVolume, 0, 1);
+	applyDrumVolume();
+}
+
+/** The note 'a' plays, and the floor lower characters fold up to. Invalid names are ignored. */
+export function setTonalCenter(name) {
+	const midi = noteToMidi(name);
+	if (midi === null) return;
+	settings.tonalCenter = name.trim();
+	tonalCenterMidi = midi;
+}
+
+/** Master volume, 0–100. */
+export function setVolume(level) {
+	settings.volume = clamp(level, settings.volume, 0, 100);
+	applyVolume();
+}
+
+/** Envelope times in ms, sustain 0–1. Applies to notes scheduled from now on. */
+export function setVoice({ attack, decay, sustain, hold, release }) {
+	const voice = settings.voice;
+	settings.voice = {
+		attack: clamp(attack, voice.attack, MIN_TIME_MS),
+		decay: clamp(decay, voice.decay, MIN_TIME_MS),
+		sustain: clamp(sustain, voice.sustain, 0, 1),
+		hold: clamp(hold, voice.hold, 0),
+		release: clamp(release, voice.release, MIN_TIME_MS)
+	};
+	applyVoice();
+}
+
+/** High shelf on the sawtooth wave: frequency in Hz, gain in dB (negative cuts). Applies immediately. */
+export function setSawFilter({ frequency, gain }) {
+	const filter = settings.sawFilter;
+	settings.sawFilter = {
+		frequency: clamp(frequency, filter.frequency, 20, 20000),
+		gain: clamp(gain, filter.gain, -40, 12)
+	};
+	applyFilter();
+}
+
+/**
+ * Starts stepping through characters. Must be called from a user gesture (e.g. a click handler).
+ *
+ * @param {object} options
+ * @param {() => {char: string, wave: 'sine' | 'triangle' | 'sawtooth'} | null} options.next
+ *   returns the next step, or null when out of text. Called ahead of time, when the note is
+ *   scheduled — not when it's heard.
+ * @param {(step: {char: string}) => void} options.onStep called on the animation frame nearest
+ *   the moment the step is heard
+ * @param {() => void} options.onEnd called when the last step has been heard
+ */
+export async function start({ next, onStep, onEnd }) {
+	await load();
+	await Tone.start();
+
+	loop?.dispose();
+	loop = new Tone.Loop((time) => {
+		const step = next();
+		if (step === null) {
+			loop.stop(time);
+			Tone.getDraw().schedule(onEnd, time);
+			return;
+		}
+
+		const drum = charToDrum(step.char);
+		const midi = charToMidi(step.char);
+		if (drum) {
+			noises[drum].triggerAttack(time);
+		} else if (midi !== null) {
+			// release once attack and decay have played out and the note has held at sustain
+			const { attack, decay, hold } = settings.voice;
+			const noteLength = (attack + decay + hold) / 1000;
+			const frequency = Tone.Frequency(midi, 'midi').toFrequency();
+			synths[step.wave].triggerAttackRelease(frequency, noteLength, time);
+		}
+		Tone.getDraw().schedule(() => onStep(step), time);
+	}, settings.stepInterval / 1000).start(0);
+
+	Tone.getTransport().start();
+}
+
+/**
+ * Stops scheduling new steps. Steps already scheduled (up to one lookahead window) still play and
+ * still reach onStep, so a caller's position stays in sync.
+ * Pass { immediate: true } to also silence the synth and drop pending onStep/onEnd calls.
+ */
+export function stop({ immediate = false } = {}) {
+	if (!Tone) return;
+
+	loop?.dispose();
+	loop = null;
+	Tone.getTransport().stop();
+
+	if (immediate) {
+		Tone.getDraw().cancel(0);
+		for (const synth of Object.values(synths)) synth.releaseAll();
+		for (const noise of Object.values(noises)) noise.triggerRelease();
+	}
+}
