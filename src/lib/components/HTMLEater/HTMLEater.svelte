@@ -456,6 +456,11 @@
 			</div>
 		</div>
 	</FrameLook>
+
+	<p class="credit" style="margin-top: var(--space-3xl)">
+		Huge thank you to Yotam Mann for creating tone.js, the open-source audio package this synth
+		relies on.
+	</p>
 </div>
 
 <style>
@@ -526,6 +531,20 @@
 		}
 	}
 
+	/* the plaques' lettering, dialed down: same uppercase gilt, no plate */
+	.credit {
+		max-width: 60ch;
+		margin: var(--space-2xs) 0 0;
+		color: color-mix(in srgb, var(--primary-hover) 45%, var(--text-muted));
+		font-size: var(--step--1);
+		letter-spacing: 0.1em;
+		line-height: 1.7;
+		text-align: center;
+		text-shadow: 0 0 0.4em color-mix(in srgb, var(--primary-hover) 20%, transparent);
+		text-transform: uppercase;
+		text-wrap: balance;
+	}
+
 	.playback {
 		display: flex;
 		align-items: center;
@@ -563,6 +582,8 @@
 
 	.container {
 		box-sizing: border-box; /* width: 100% and aspect-ratio now include padding and border */
+		position: relative;
+		isolation: isolate; /* so the texture blends with the surface, not the page behind it */
 		background-color: var(--surface);
 		border: var(--border-width) solid var(--border);
 		border-radius: var(--border-radius);
@@ -572,6 +593,21 @@
 		overflow: hidden;
 
 		padding: var(--space-2xs);
+	}
+	/* screen.png's lightness over the surface, which is only visible as the chrome around the
+	   windows: the tabs paint their own opaque --bg on top of it. z-index: -1 keeps it above the
+	   container's background but under the content; grayscale drops the image's own color, so only
+	   its light and dark carry over. */
+	.container::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		background: url('./screen.png') center / cover no-repeat;
+		filter: grayscale(1);
+		mix-blend-mode: overlay;
+		opacity: 0.2;
+		pointer-events: none;
 	}
 
 	.columns {
