@@ -594,19 +594,18 @@
 
 		padding: var(--space-2xs);
 	}
-	/* screen.png's lightness over the surface, which is only visible as the chrome around the
-	   windows: the tabs paint their own opaque --bg on top of it. z-index: -1 keeps it above the
-	   container's background but under the content; grayscale drops the image's own color, so only
-	   its light and dark carry over. */
+
 	.container::before {
 		content: '';
 		position: absolute;
 		inset: 0;
 		z-index: -1;
-		background: url('./screen.png') center / cover no-repeat;
-		filter: grayscale(1);
+		background:
+			linear-gradient(var(--primary-hover), var(--primary-hover)), linear-gradient(#fff, #fff);
+
+		filter: contrast(2) invert(1);
 		mix-blend-mode: overlay;
-		opacity: 0.2;
+		opacity: 0.05;
 		pointer-events: none;
 	}
 
