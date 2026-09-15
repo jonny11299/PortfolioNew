@@ -15,17 +15,17 @@
 	const START = 135; // SVG angles run clockwise from 3 o'clock, so this is 7:30
 	const SWEEP = 270; // degrees of travel, ending at 4:30
 	const DRAG_RANGE = 150; // px of vertical drag for the full range; shift makes it 4× finer
+	const TICKS = 11; // marks around the dial, like a pot's scale
+	const tickAngles = Array.from({ length: TICKS }, (_, i) => START + (SWEEP * i) / (TICKS - 1));
 
 	let decimals = $derived((String(step).split('.')[1] ?? '').length);
 	let norm = $derived(toNorm(value));
 	let angle = $derived(START + SWEEP * norm);
-	let readout = $derived(
-		value == null
-			? '–'
-			: format
-				? format(value)
-				: `${value.toFixed(decimals)}${unit ? ` ${unit}` : ''}`
-	);
+	let litTick = $derived(Math.round(norm * (TICKS - 1)));
+	// shown as a bold number and a smaller unit; `format` replaces both
+	let number = $derived(value == null ? '–' : format ? format(value) : value.toFixed(decimals));
+	let shownUnit = $derived(value == null || format ? '' : unit);
+	let readout = $derived(shownUnit ? `${number} ${shownUnit}` : number);
 	// { y, norm } while a pointer is held on the dial. Raw state: only whether it's set is shown,
 	// so moving it doesn't need to trigger anything.
 	let drag = $state.raw(null);
@@ -113,6 +113,11 @@
 		{onkeydown}
 		ondblclick={() => reset !== undefined && (value = reset)}
 	>
+		{#each tickAngles as tickAngle, i (i)}
+			{@const [x1, y1] = point(tickAngle, 48)}
+			{@const [x2, y2] = point(tickAngle, 54)}
+			<line class="tick" class:lit={i === litTick} {x1} {y1} {x2} {y2} />
+		{/each}
 		<path class="track" d={arc(START, START + SWEEP)} />
 		{#if norm > 0}
 			<path class="fill" d={arc(START, angle)} />
@@ -120,7 +125,9 @@
 		<line class="pointer" x1="50" y1="50" x2={point(angle, 26)[0]} y2={point(angle, 26)[1]} />
 	</svg>
 	<span class="label">{label}</span>
-	<span class="readout">{readout}</span>
+	<span class="readout">
+		<span class="number">{number}</span>{#if shownUnit}<span class="unit">{shownUnit}</span>{/if}
+	</span>
 </div>
 
 <style>
@@ -145,6 +152,18 @@
 		border-radius: 50%;
 	}
 
+	.tick {
+		stroke: var(--text-muted);
+		stroke-width: 2.5;
+		stroke-linecap: round;
+		opacity: 0.45;
+		transition: stroke 120ms;
+	}
+	.tick.lit {
+		stroke: var(--accent);
+		opacity: 1;
+	}
+
 	.track,
 	.fill {
 		fill: none;
@@ -160,8 +179,8 @@
 		transition: stroke 120ms;
 	}
 	/* dragging too, since the pointer can leave the dial mid-drag */
-	.dial:hover .fill,
-	.dial.dragging .fill {
+	.dial:hover :is(.fill, .tick.lit),
+	.dial.dragging :is(.fill, .tick.lit) {
 		stroke: var(--primary-hover);
 	}
 	.pointer {
@@ -172,11 +191,24 @@
 
 	.label {
 		color: var(--text-muted);
-		font-size: var(--step--1);
+		font-size: calc(var(--step--1) * 0.85);
+		letter-spacing: 0.08em;
+		overflow-wrap: normal; /* wrap between words, not mid-word like the tabs allow */
+		text-align: center;
+		text-transform: uppercase;
 	}
 	.readout {
 		font-family: var(--font-mono);
-		font-size: var(--step--1);
 		white-space: nowrap;
+	}
+	.number {
+		font-size: var(--step-0);
+		font-weight: 700;
+	}
+	.unit {
+		margin-left: 0.2em;
+		color: var(--text-muted);
+		font-size: calc(var(--step--1) * 0.8);
+		text-transform: uppercase;
 	}
 </style>

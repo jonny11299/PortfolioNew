@@ -12,7 +12,11 @@ A synth that "eats" HTML source, playing one sound per character while the UI fo
 - `highlight.js`: `tokenize(text)` flattens Prism's HTML tokens into `{ start, end, classes }` runs; `sliceRuns` cuts them from an offset
 - `Knob.svelte`: rotary control, `bind:value` with `min`/`max`/`step`, optional `log` response, `reverse` direction, `format` readout and double-click `reset`
 - `Slider.svelte`: horizontal slider on a restyled native range input, same `bind:value`/`min`/`max`/`step`/`format`/`reset` props as `Knob`
-- `Graph.svelte`: fixed-size line graph of `[x, y]` points, stretched to fill its box
+- `Graph.svelte`: fixed-size line graph of `[x, y]` points, stretched to fill its box; optional `grid`, `ticks`, `marker` and `axis` labels
+- `Frame.svelte`: gilt rococo mirror frame around its children, with `shimmer` for a traveling glint
+- `Plaque.svelte`: engraved gilt plate with scrolled ends, sized by `--plaque-height`
+- `Ornament.svelte`: draws one two-tone ornament from `ornament.js`
+- `ornament.js`: path generators (`spiral`, `scroll`, `leaf`, `shell`) and the `corner`, `crest`, `side` and `plaqueEnd` ornaments
 - `HTMLEater-old.svelte`: original SVG layout mockup, reference only
 
 ## Architecture
@@ -47,6 +51,15 @@ Each step is a rest (whitespace), a drum (punctuation or symbol, `[\p{P}\p{S}]`)
 - `restStart` is a number on purpose: a `$derived` object would be new every step and re-slice the whole rest view every 40ms.
 - Syntax colors use `:global` token classes under `.code`, all from theme variables (`--primary`, `--primary-hover`, `--secondary`, `--accent`, `--text-warn`, `--text-muted`). Rule order matters where token classes nest. `--text-key` is unused on purpose; keep it as a last resort.
 - The settings panel's `.scrollY` hides its scrollbar but still scrolls.
+
+## Look
+
+- Column order: name plaque, playback plaque (play, pause, reload), then the synth inside `Frame`.
+- Gilt colors are `--gilt` (`--primary-hover` at 50%) for bodies and `--gilt-fine` (90%) for fine details. They're mixed into `--bg` (override with `--frame-backdrop`) instead of made transparent, so overlapping pieces don't stack brighter.
+- `Frame` reserves its space with padding. Everything scales from `--frame-size`: the band, beads and leaf garlands are CSS; the corners, crest, bottom apron and side cartouches are SVG from `ornament.js`, where 100 units equal `--frame-size`. Each viewBox's band position must line up with `.band`; the comments in `ornament.js` give the numbers.
+- Ornament art must stay out of the glass (for corners, the x > 40, y > 40 quarter), since it sits on top of the content.
+- Motion: `Frame`'s shimmer runs while playing, and the reader glow restarts each step through `{#key position}`. Both stop under `prefers-reduced-motion`.
+- Instrument-panel texture from the reference image: knob tick rings, slider ticks and lamp thumbs, graph gridlines, ruler and peak marker, uppercase labels, and bold readouts with small units.
 - `.oneline::before` adds a zero-width space so reader and queue tabs keep their height when empty.
 - After "HTML Source:" is a `<label>` around a hidden file input. It says "upload" until a file is loaded, then shows the file name, and clicking either opens the picker (`.html`, `.htm`, `.txt`, `.text`). A loaded file becomes `loadedText`, which `reload()` restores.
 - Voice shows a `Graph` of `synth.envelopePoints(voice)` above four `Knob`s (attack, decay, sustain, release). The graph mimics Tone's curves (see `approach`) and draws a sustain plateau a quarter as long as the other stages so the level stays readable, though notes release right after decay. Size and colors come from CSS variables: `--graph-width`, `--graph-height`, `--knob-size`, `--accent`.

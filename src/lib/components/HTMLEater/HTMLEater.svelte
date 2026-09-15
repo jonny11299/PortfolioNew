@@ -3,8 +3,10 @@
 	import * as synth from './synth.js';
 	import dataText from './data.text?raw';
 	import { classifyWaves } from './waves.js';
+	import Frame from './Frame.svelte';
 	import Graph from './Graph.svelte';
 	import Knob from './Knob.svelte';
+	import Plaque from './Plaque.svelte';
 	import Slider from './Slider.svelte';
 	import { tokenize, sliceRuns } from './highlight.js';
 
@@ -129,164 +131,185 @@
 {#snippet highlighted(runs)}{#each runs as run (run.key)}<span class={run.classes}>{run.text}</span
 		>{/each}{/snippet}
 
-<div class="testing">
-	<button onclick={() => play()}>play</button>
-	<button onclick={() => pause()}>pause</button>
-	<button onclick={() => reload()}>reload</button>
-</div>
+<div class="htmlEater">
+	<Plaque --plaque-height="3.25rem">
+		<h2 class="name">HTML Eater</h2>
+	</Plaque>
 
-<div class="container">
-	<div class="columns">
-		<div class="leftPanel">
-			<div class="row">
-				<div class="tab center">
-					<h2 class="title1">HTML Eater</h2>
-				</div>
-				<div class="tab center fill sourceTab">
-					<h3 class="title2">HTML Source:</h3>
-					<label class="upload" title="Choose an .html or .txt file">
-						{sourceName || 'upload'}
-						<input
-							class="visuallyHidden"
-							type="file"
-							accept=".html,.htm,.txt,.text,text/html,text/plain"
-							onchange={onPick}
-						/>
-					</label>
-				</div>
-			</div>
-			<div class="row">
-				<div class="tab oneline center code" style="min-width: var(--space-xl)">
-					{@render highlighted(readerRuns)}
-				</div>
-				<div class="tab oneline code">{@render highlighted(queuedRuns)}</div>
-			</div>
-			<div class="rest">
-				<div class="tab clipEnd">
-					<pre class="code">{@render highlighted(restRuns)}</pre>
-				</div>
-			</div>
+	<Plaque>
+		<div class="playback">
+			<button class:active={playing} onclick={() => play()}>play</button>
+			<span class="divider" aria-hidden="true">◆</span>
+			<button onclick={() => pause()}>pause</button>
+			<span class="divider" aria-hidden="true">◆</span>
+			<button onclick={() => reload()}>reload</button>
 		</div>
-		<div class="rightPanel">
-			<div class="tab clipEnd scrollY">
-				<h3 class="title2">Synth Settings</h3>
-				<div class="settings">
-					<!--
-					<label>
-						Read mode
-						<select bind:value={read_setting}>
-							{#each read_settings as setting (setting)}
-								<option value={setting}>{setting}</option>
-							{/each}
-						</select>
-					</label>
-					 -->
-					<div class="sliders">
-						<Slider
-							label="Volume"
-							min={0}
-							max={100}
-							step={1}
-							reset={synth.defaults.volume}
-							bind:value={volume}
-						/>
-						<Slider
-							label="Drum volume"
-							min={0}
-							max={1}
-							step={0.01}
-							reset={synth.defaults.drumVolume}
-							bind:value={drumVolume}
-						/>
-					</div>
-					<div class="knobs">
-						<!-- the value is the pause between characters, so clockwise shortens it -->
-						<Knob
-							label="Speed"
-							unit="ms"
-							min={5}
-							max={1000}
-							step={1}
-							log
-							reverse
-							reset={synth.defaults.stepInterval}
-							bind:value={msPause}
-						/>
-						<Knob
-							label="Tonal center"
-							min={24}
-							max={84}
-							step={1}
-							format={synth.midiToNote}
-							reset={synth.noteToMidi(synth.defaults.tonalCenter)}
-							bind:value={tonalCenter}
-						/>
-					</div>
+	</Plaque>
 
-					<h4>Voice</h4>
-					<div class="voice">
-						<Graph points={envelope.points} xMax={envelope.duration} label="Voice envelope" />
-						<div class="knobs">
-							<Knob
-								label="Attack"
-								unit="ms"
-								min={1}
-								max={2000}
-								step={1}
-								log
-								reset={synth.defaults.voice.attack}
-								bind:value={voice.attack}
-							/>
-							<Knob
-								label="Decay"
-								unit="ms"
-								min={1}
-								max={2000}
-								step={1}
-								log
-								reset={synth.defaults.voice.decay}
-								bind:value={voice.decay}
-							/>
-							<Knob
-								label="Sustain"
-								min={0}
-								max={1}
-								step={0.01}
-								reset={synth.defaults.voice.sustain}
-								bind:value={voice.sustain}
-							/>
-							<Knob
-								label="Release"
-								unit="ms"
-								min={1}
-								max={2000}
-								step={1}
-								log
-								reset={synth.defaults.voice.release}
-								bind:value={voice.release}
-							/>
+	<Frame shimmer={playing}>
+		<div class="container">
+			<div class="columns">
+				<div class="leftPanel">
+					<div class="row">
+						<div class="tab center fill sourceTab">
+							<h3 class="title2">HTML Source:</h3>
+							<label class="upload" title="Choose an .html or .txt file">
+								{sourceName || 'upload'}
+								<input
+									class="visuallyHidden"
+									type="file"
+									accept=".html,.htm,.txt,.text,text/html,text/plain"
+									onchange={onPick}
+								/>
+							</label>
 						</div>
 					</div>
-					<!--
-					<h4>Sawtooth filter</h4>
-					<label>
-						Shelf (Hz)
-						<input type="number" min="20" max="20000" step="50" bind:value={sawFilter.frequency} />
-					</label>
-					<label>
-						Gain (dB) <input
-							type="number"
-							min="-40"
-							max="12"
-							step="1"
-							bind:value={sawFilter.gain}
-						/>
-					</label>
-					 -->
+					<div class="row">
+						<div class="tab oneline center code reader" style="min-width: var(--space-xl)">
+							<!-- recreated each step, which restarts its pulse -->
+							{#key position}
+								{#if position >= 0}<span class="glow" aria-hidden="true"></span>{/if}
+							{/key}
+							{@render highlighted(readerRuns)}
+						</div>
+						<div class="tab oneline code">{@render highlighted(queuedRuns)}</div>
+					</div>
+					<div class="rest">
+						<div class="tab clipEnd">
+							<pre class="code">{@render highlighted(restRuns)}</pre>
+						</div>
+					</div>
+				</div>
+				<div class="rightPanel">
+					<div class="tab clipEnd scrollY">
+						<h3 class="title2">Synth Settings</h3>
+						<div class="settings">
+							<!--
+							<label>
+								Read mode
+								<select bind:value={read_setting}>
+									{#each read_settings as setting (setting)}
+										<option value={setting}>{setting}</option>
+									{/each}
+								</select>
+							</label>
+							 -->
+							<div class="sliders">
+								<Slider
+									label="Volume"
+									min={0}
+									max={100}
+									step={1}
+									reset={synth.defaults.volume}
+									bind:value={volume}
+								/>
+								<Slider
+									label="Drum volume"
+									min={0}
+									max={1}
+									step={0.01}
+									reset={synth.defaults.drumVolume}
+									bind:value={drumVolume}
+								/>
+							</div>
+							<div class="knobs">
+								<!-- the value is the pause between characters, so clockwise shortens it -->
+								<Knob
+									label="Speed"
+									unit="ms"
+									min={5}
+									max={1000}
+									step={1}
+									log
+									reverse
+									reset={synth.defaults.stepInterval}
+									bind:value={msPause}
+								/>
+								<Knob
+									label="Tonal center"
+									min={24}
+									max={84}
+									step={1}
+									format={synth.midiToNote}
+									reset={synth.noteToMidi(synth.defaults.tonalCenter)}
+									bind:value={tonalCenter}
+								/>
+							</div>
+
+							<h4>Voice</h4>
+							<div class="voice">
+								<Graph
+									points={envelope.points}
+									xMax={envelope.duration}
+									label="Voice envelope"
+									grid={4}
+									ticks={20}
+									marker={envelope.points[1]}
+									axis={['0', `${Math.round(envelope.duration)} ms`]}
+								/>
+								<div class="knobs">
+									<Knob
+										label="Attack"
+										unit="ms"
+										min={1}
+										max={2000}
+										step={1}
+										log
+										reset={synth.defaults.voice.attack}
+										bind:value={voice.attack}
+									/>
+									<Knob
+										label="Decay"
+										unit="ms"
+										min={1}
+										max={2000}
+										step={1}
+										log
+										reset={synth.defaults.voice.decay}
+										bind:value={voice.decay}
+									/>
+									<Knob
+										label="Sustain"
+										min={0}
+										max={1}
+										step={0.01}
+										reset={synth.defaults.voice.sustain}
+										bind:value={voice.sustain}
+									/>
+									<Knob
+										label="Release"
+										unit="ms"
+										min={1}
+										max={2000}
+										step={1}
+										log
+										reset={synth.defaults.voice.release}
+										bind:value={voice.release}
+									/>
+								</div>
+							</div>
+							<!--
+							<h4>Sawtooth filter</h4>
+							<label>
+								Shelf (Hz)
+								<input type="number" min="20" max="20000" step="50" bind:value={sawFilter.frequency} />
+							</label>
+							<label>
+								Gain (dB) <input
+									type="number"
+									min="-40"
+									max="12"
+									step="1"
+									bind:value={sawFilter.gain}
+								/>
+							</label>
+							 -->
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	</Frame>
 </div>
 
 <style>
@@ -323,14 +346,57 @@
 		color: var(--text-muted);
 	}
 
-	.testing {
-		background-color: var(--surface);
-		border: var(--border-width) solid var(--border);
-		display: block;
-		width: 100%;
-		min-height: 2rem;
-		overflow: scroll;
+	/* --- Name plaque, playback plaque, then the framed synth --- */
+	.htmlEater {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-2xs);
 		margin-block: var(--space-l);
+	}
+
+	.name {
+		margin: 0;
+		font-size: var(--step-2);
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		white-space: nowrap;
+	}
+
+	.playback {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+	}
+	.playback button {
+		padding: 0.15em 0.3em;
+		border: none;
+		background: none;
+		color: inherit;
+		font: inherit;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		text-shadow: inherit;
+		cursor: pointer;
+	}
+	.playback button:hover {
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+	.playback button.active {
+		text-shadow:
+			0 0 0.15em var(--primary-hover),
+			0 0 0.6em var(--primary-hover);
+	}
+	.playback button:focus-visible {
+		outline: 2px solid var(--secondary);
+		outline-offset: 2px;
+	}
+	.divider {
+		font-size: 0.5em;
+		opacity: 0.7;
 	}
 
 	.container {
@@ -400,6 +466,40 @@
 		border: 1px solid var(--text-muted);
 	}
 
+	/* a soft accent glow behind the reader char, pulsing on each step */
+	.reader {
+		position: relative;
+		isolation: isolate; /* keeps the glow's z-index above the tab's background */
+	}
+	.glow {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		background: radial-gradient(
+			circle,
+			color-mix(in srgb, var(--accent) 60%, transparent),
+			transparent 70%
+		);
+		opacity: 0.35;
+		animation: pulse 400ms ease-out;
+		pointer-events: none;
+	}
+	@keyframes pulse {
+		from {
+			opacity: 1;
+			transform: scale(1.3);
+		}
+		to {
+			opacity: 0.35;
+			transform: scale(1);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.glow {
+			animation: none;
+		}
+	}
+
 	.settings {
 		display: grid;
 		grid-template-columns: auto 1fr;
@@ -413,6 +513,10 @@
 	.settings h4 {
 		grid-column: 1 / -1;
 		margin: var(--space-2xs) 0 0;
+		color: var(--text-muted);
+		font-size: var(--step--1);
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 	}
 	.voice {
 		grid-column: 1 / -1;
@@ -520,15 +624,14 @@
 
 	.nameContainer {
 	}
-	.title1 {
-		color: var(--primary);
-		margin: 0;
-		padding: 0;
-	}
+	/* small uppercase headings, like the labels on an instrument panel */
 	.title2 {
 		color: var(--secondary);
 		margin: 0;
 		padding: 0;
+		font-size: var(--step-0);
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 	}
 
 	.sourceContainer {
