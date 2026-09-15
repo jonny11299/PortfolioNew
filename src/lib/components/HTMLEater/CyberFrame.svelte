@@ -4,7 +4,7 @@
 
 	// The lowkey sibling of Frame: a chamfered gilt band and a neon rail, HUD brackets at the corners,
 	// one small shell on top, and optional `tags` ({ tl, tr, bl, br }) as corner readouts. Reserves
-	// its own space like Frame. `shimmer` sweeps light along the rail and flickers the glow.
+	// its own space like Frame. `shimmer` sweeps light along the rail and glints the corner pieces.
 	let { shimmer = false, tags = {}, children } = $props();
 </script>
 
@@ -95,7 +95,8 @@
 	.glass::after {
 		box-shadow:
 			inset 0 0 0 1px color-mix(in srgb, var(--primary-hover) 35%, transparent),
-			inset 0 0 calc(var(--frame-size) * 0.4) color-mix(in srgb, var(--primary-hover) 14%, transparent),
+			inset 0 0 calc(var(--frame-size) * 0.4)
+				color-mix(in srgb, var(--primary-hover) 14%, transparent),
 			inset 0 0 calc(var(--frame-size) * 0.3) color-mix(in srgb, #000 28%, transparent);
 		background: linear-gradient(
 			135deg,
@@ -248,8 +249,9 @@
 		right: calc(var(--band-x) + var(--chamfer));
 	}
 
-	/* --- Shimmer: Frame's glint travels around the brackets and crest, light sweeps along the rail,
-	   and the glow flickers now and then --- */
+	/* --- Shimmer: Frame's glint travels around the brackets and crest, and light sweeps along the
+	   rail. No neon flicker: dipping the whole .neon layer's opacity read as the frame blinking
+	   out, not as a glow. --- */
 	.shimmer .glints {
 		animation: glint 3s ease-in-out infinite;
 		animation-delay: calc(var(--order) * 0.6s);
@@ -282,28 +284,9 @@
 			background-position: 0% 0;
 		}
 	}
-	.shimmer .neon {
-		animation: flicker 3.2s linear infinite;
-	}
-	@keyframes flicker {
-		0%,
-		90%,
-		92%,
-		95%,
-		100% {
-			opacity: 1;
-		}
-		91% {
-			opacity: 0.5;
-		}
-		94% {
-			opacity: 0.7;
-		}
-	}
 	@media (prefers-reduced-motion: reduce) {
 		.shimmer .glints,
-		.shimmer .rail,
-		.shimmer .neon {
+		.shimmer .rail {
 			animation: none;
 		}
 	}

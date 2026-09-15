@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import * as synth from './synth.js';
 	import dataText from './data.text?raw';
 	import { classifyWaves } from './waves.js';
@@ -32,6 +32,11 @@
 	let volume = $state(synth.defaults.volume); // 0–100
 	let drumVolume = $state(synth.defaults.drumVolume); // 0–1, relative to the waves
 	let voice = $state({ ...synth.defaults.voice }); // ms, sustain 0–1
+	let scaleRoot = $state(synth.defaults.scaleRoot); // a note name like 'C' or 'F#'
+	let scale = $state(synth.defaults.scale); // a key of synth.scales, or 'custom' once the grid is edited
+	// The scale itself: an output pitch class per input pitch class, C first. The grid edits this,
+	// and picking a named scale overwrites it.
+	let scaleMap = $state(synth.scaleMapFor(synth.defaults.scaleRoot, synth.defaults.scale));
 	let sawFilter = $state({ ...synth.defaults.sawFilter }); // frequency Hz, gain dB
 	let playing = $state(false);
 	let queueLength = 50; // will load 50 chars into the top part
@@ -55,7 +60,7 @@
 	const PlaqueLook = look === 'cyber' ? CyberPlaque : Plaque;
 	// corner readouts for the cyber frame; the rococo one ignores them
 	let hud = $derived({
-		tl: `src://${sourceName || 'local'}`,
+		tl: `src://${sourceName || 'default'}`,
 		tr: playing ? '● playing' : '○ idle',
 		bl: `${String(position + 1).padStart(5, '0')} / ${source.length}`,
 		br: `${msPause} ms · ${synth.midiToNote(tonalCenter)}`
@@ -67,7 +72,56 @@
 	$effect(() => synth.setVolume(volume));
 	$effect(() => synth.setDrumVolume(drumVolume));
 	$effect(() => synth.setVoice({ ...voice }));
+	$effect(() => synth.setScaleMap(scaleMap));
 	$effect(() => synth.setSawFilter({ ...sawFilter }));
+
+	const BLACK_KEYS = [1, 3, 6, 8, 10]; // C#, D#, F#, G#, A#
+	const isBlack = (pitch) => BLACK_KEYS.includes(pitch);
+	// grid rows, highest note at the top
+	const outputs = [...synth.noteNames.keys()].reverse();
+	let gridEl; // so the arrow keys look up squares in this grid, not any grid on the page
+
+	// Picking a named scale overwrites the grid; the root only means anything while one is picked
+	function pickScale(name) {
+		scale = name;
+		if (name !== 'custom') scaleMap = synth.scaleMapFor(scaleRoot, name);
+	}
+	function pickRoot(name) {
+		scaleRoot = name;
+		if (scale !== 'custom') scaleMap = synth.scaleMapFor(name, scale);
+	}
+
+	// One output per input, so a click replaces whatever its column already held
+	function mapNote(input, output) {
+		const next = [...scaleMap];
+		next[input] = output;
+		scaleMap = next;
+		// the selects keep their name only while they still describe the grid
+		const named =
+			scale !== 'custom' && synth.scaleMapFor(scaleRoot, scale).every((p, i) => p === next[i]);
+		if (!named) scale = 'custom';
+	}
+
+	// Only the lit square in each column is tabbable, so up and down move the mapping from there
+	async function onCellKey(event, input) {
+		const step = { ArrowUp: 1, ArrowDown: -1 }[event.key];
+		if (!step) return;
+		event.preventDefault();
+
+		const output = (((scaleMap[input] + step) % 12) + 12) % 12;
+		mapNote(input, output);
+		await tick(); // the square that's now lit is the one that's now tabbable
+		gridEl?.querySelector(`[data-cell="${input}-${output}"]`)?.focus();
+	}
+
+	// Space toggles playback, except where space already does something
+	function onKey(event) {
+		if (event.code !== 'Space' || event.metaKey || event.ctrlKey || event.altKey) return;
+		if (event.target?.closest?.('input, select, textarea, button, [contenteditable]')) return;
+		event.preventDefault(); // it would scroll the page otherwise
+		if (playing) pause();
+		else play();
+	}
 
 	// Where the chunk holding `pos` ends, which is where the rest view starts
 	function findRestStart(text, pos, setting) {
@@ -125,6 +179,13 @@
 		scheduledPosition = -1;
 	}
 
+	// back to the bundled sample, dropping whatever file was uploaded
+	function useDefault() {
+		loadedText = dataText;
+		sourceName = '';
+		reload();
+	}
+
 	async function onPick(event) {
 		const input = event.currentTarget;
 		const file = input.files[0];
@@ -144,6 +205,8 @@
 <!-- one line on purpose: whitespace inside <pre> is shown -->
 {#snippet highlighted(runs)}{#each runs as run (run.key)}<span class={run.classes}>{run.text}</span
 		>{/each}{/snippet}
+
+<svelte:window onkeydown={onKey} />
 
 <div class="htmlEater">
 	<PlaqueLook --plaque-height="3.25rem">
@@ -165,17 +228,28 @@
 			<div class="columns">
 				<div class="leftPanel">
 					<div class="row">
-						<div class="tab center fill sourceTab">
+						<div class="tab fill sourceTab">
 							<h3 class="title2">HTML Source:</h3>
-							<label class="upload" title="Choose an .html or .txt file">
-								{sourceName || 'upload'}
-								<input
-									class="visuallyHidden"
-									type="file"
-									accept=".html,.htm,.txt,.text,text/html,text/plain"
-									onchange={onPick}
-								/>
-							</label>
+							<span class="reading">
+								<span class="sourceNow" class:custom={sourceName} title={sourceName || 'data.text'}>
+									{sourceName || 'google'}
+								</span>
+							</span>
+							<span class="sourceActions">
+								<label class="upload" title="Read your own .html, .htm or .txt file">
+									{sourceName ? 'change file' : 'upload .html'}
+									<input
+										class="visuallyHidden"
+										type="file"
+										accept=".html,.htm,.txt,.text,text/html,text/plain"
+										onchange={onPick}
+									/>
+								</label>
+								{#if sourceName}
+									<span class="divider" aria-hidden="true">◆</span>
+									<button class="linkish" onclick={() => useDefault()}>use default</button>
+								{/if}
+							</span>
 						</div>
 					</div>
 					<div class="row">
@@ -189,13 +263,13 @@
 						<div class="tab oneline code">{@render highlighted(queuedRuns)}</div>
 					</div>
 					<div class="rest">
-						<div class="tab clipEnd">
+						<div class="tab clipEnd scrollBoth scrollbars">
 							<pre class="code">{@render highlighted(restRuns)}</pre>
 						</div>
 					</div>
 				</div>
 				<div class="rightPanel">
-					<div class="tab clipEnd scrollY">
+					<div class="tab clipEnd scrollY scrollbars">
 						<h3 class="title2">Synth Settings</h3>
 						<div class="settings">
 							<!--
@@ -250,7 +324,7 @@
 								/>
 							</div>
 
-							<h4>Voice</h4>
+							<h4 style="margin-bottom: var(--space-2xs)">Voice</h4>
 							<div class="voice">
 								<Graph
 									points={envelope.points}
@@ -302,6 +376,64 @@
 									/>
 								</div>
 							</div>
+
+							<h4 style="margin-bottom: var(--space-2xs)">Scale</h4>
+							<div class="scale">
+								<div class="scaleSelects">
+									<label>
+										Root
+										<select
+											bind:value={scaleRoot}
+											onchange={(event) => pickRoot(event.currentTarget.value)}
+										>
+											{#each synth.noteNames as name (name)}
+												<option value={name}>{name}</option>
+											{/each}
+										</select>
+									</label>
+									<label>
+										Scale
+										<select
+											bind:value={scale}
+											onchange={(event) => pickScale(event.currentTarget.value)}
+										>
+											{#each Object.entries(synth.scales) as [name, { label }] (name)}
+												<option value={name}>{label}</option>
+											{/each}
+											<!-- only listed once the grid has been edited away from a named scale -->
+											{#if scale === 'custom'}<option value="custom">Custom</option>{/if}
+										</select>
+									</label>
+								</div>
+
+								<div
+									bind:this={gridEl}
+									class="grid"
+									role="group"
+									aria-label="Scale map: each column is a note played, each row the note it lands on"
+								>
+									{#each outputs as output (output)}
+										{#each synth.noteNames as _, input (input)}
+											{@const on = scaleMap[input] === output}
+											<button
+												type="button"
+												class="cell"
+												class:on
+												class:blackCol={isBlack(input)}
+												class:blackRow={isBlack(output)}
+												tabindex={on ? 0 : -1}
+												aria-pressed={on}
+												aria-label="{synth.noteNames[input]} plays {synth.noteNames[output]}"
+												title="{synth.noteNames[input]} → {synth.noteNames[output]}"
+												data-cell="{input}-{output}"
+												onclick={() => mapNote(input, output)}
+												onkeydown={(event) => onCellKey(event, input)}
+											></button>
+										{/each}
+									{/each}
+								</div>
+								<p class="gridAxis"><span>note played →</span><span>↑ note heard</span></p>
+							</div>
 							<!--
 							<h4>Sawtooth filter</h4>
 							<label>
@@ -335,7 +467,8 @@
 		font-size: var(--step-1);
 	}
 	pre {
-		overflow: clip;
+		/* no clipping here: the scrolling tab around it does that, and a clipped pre would have
+		   nothing to scroll sideways */
 		tab-size: 2;
 	}
 
@@ -544,8 +677,9 @@
 	}
 	.settings h4 {
 		grid-column: 1 / -1;
-		margin: var(--space-2xs) 0 0;
-		color: var(--text-muted);
+		margin-inline: 0;
+		margin-block: var(--space-s); /* the sections were running into each other */
+		color: var(--secondary); /* same as the .title2 panel heading */
 		font-size: var(--step--1);
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
@@ -577,29 +711,185 @@
 		min-width: 0;
 	}
 
+	/* the site's globals give selects a lit border on focus but nothing on hover, so the control
+	   looks inert until it's clicked; this borrows the focus treatment */
+	select:hover {
+		cursor: pointer;
+		border-color: var(--primary);
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 35%, transparent);
+	}
+
+	.scale {
+		grid-column: 1 / -1;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2xs);
+		width: 100%;
+	}
+	/* root and scale side by side; the scale names are longer, so they get more of the row */
+	.scaleSelects {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+		gap: var(--space-2xs);
+	}
+	/* overrides .settings label's display: contents, which is only for the two-column rows */
+	.settings .scaleSelects label {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3xs);
+		min-width: 0;
+		color: var(--text-muted);
+		font-size: calc(var(--step--1) * 0.85);
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+	/* the site's global select padding is built for full-width forms, not this panel */
+	.scale select {
+		margin: 0;
+		padding: 0.25em 0.4em;
+		color: var(--text);
+		font-size: var(--step--1);
+		letter-spacing: normal;
+		text-transform: none;
+	}
+
+	/* The map, after Ableton's Scale device: a column per note played, a row per note heard, and
+	   one lit square per column, since every note lands somewhere. */
+	.grid {
+		--line: color-mix(in srgb, var(--text-muted) 30%, transparent);
+		display: grid;
+		grid-template-columns: repeat(12, 1fr);
+		aspect-ratio: 1;
+		width: 100%;
+		border: var(--border-width) solid var(--border);
+		border-radius: var(--border-radius);
+		overflow: hidden; /* so the corner squares don't square off the rounded border */
+	}
+	/* written as button.cell so it outranks the site's global button and button:hover rules */
+	button.cell {
+		/* the key tint is a variable, not a background: .blackCol.blackRow is two classes, so as a
+		   background it outranked .on and left a sharp mapped to a sharp looking switched off */
+		--key-tint: transparent;
+		min-width: 0;
+		margin: 0;
+		padding: 0;
+		border: none;
+		border-right: 1px solid var(--line);
+		border-bottom: 1px solid var(--line);
+		border-radius: 0;
+		background: var(--key-tint);
+		cursor: pointer;
+	}
+	button.cell:nth-child(12n) {
+		border-right: none;
+	}
+	button.cell:nth-child(n + 133) {
+		border-bottom: none;
+	}
+	/* the piano pattern on both axes, so it's clear which notes are sharps */
+	button.cell.blackCol,
+	button.cell.blackRow {
+		--key-tint: color-mix(in srgb, var(--text) 20%, transparent);
+	}
+	button.cell.blackCol.blackRow {
+		--key-tint: color-mix(in srgb, var(--text) 20%, transparent);
+	}
+	button.cell.on {
+		background: var(--accent);
+	}
+	/* inset, so the outline isn't cropped by the neighbouring squares' borders */
+	button.cell:hover {
+		outline: 2px solid var(--primary);
+		outline-offset: -2px;
+		z-index: 1;
+	}
+	button.cell:focus-visible {
+		outline: 2px solid var(--secondary);
+		outline-offset: -2px;
+		z-index: 1;
+	}
+	.gridAxis {
+		display: flex;
+		justify-content: space-between;
+		gap: var(--space-2xs);
+		margin: 0;
+		color: var(--text-muted);
+		font-size: calc(var(--step--1) * 0.8);
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	/* heading, then what's being read, then the controls pushed to the far end */
 	.sourceTab {
+		display: flex;
+		align-items: center;
 		gap: var(--space-2xs);
 		min-width: 0;
 	}
-	/* the title keeps its one line; the file name shrinks and truncates instead */
+	/* the title and the controls keep their one line; the file name truncates instead */
 	.sourceTab h3 {
 		white-space: nowrap;
 		flex-shrink: 0;
 	}
-	.upload {
-		cursor: pointer;
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
+	.reading {
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-3xs);
+		flex: 1;
 		min-width: 0;
 	}
-	.upload:hover {
-		color: var(--secondary);
+	.readingLabel {
+		flex-shrink: 0;
+		color: var(--text-muted);
+		font-size: calc(var(--step--1) * 0.85);
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+	/* the bundled sample reads as muted; an uploaded file is the accent, so it's obvious which
+	   one is playing */
+	.sourceNow {
+		overflow: hidden;
+		min-width: 0;
+		color: var(--text-muted);
+		font-family: var(--font-mono);
+		font-size: var(--step--1);
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.sourceNow.custom {
+		color: var(--accent);
+	}
+	.sourceActions {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2xs);
+		flex-shrink: 0;
+	}
+	/* both read as links; button.linkish outranks the site's global button:hover */
+	.upload,
+	button.linkish {
+		padding: 0;
+		border: none;
+		background: none;
+		margin: 0;
+		color: var(--primary);
+		font: inherit;
+		font-size: var(--step--1);
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		white-space: nowrap;
+		cursor: pointer;
+	}
+	.upload:hover,
+	button.linkish:hover {
+		background: none;
+		color: var(--primary-hover);
 		text-decoration: underline;
 	}
 	/* keyboard focus only, so a mouse click doesn't leave an outline behind */
-	.upload:has(input:focus-visible) {
-		outline: 2px solid var(--secondary);
+	.upload:has(input:focus-visible),
+	button.linkish:focus-visible {
+		outline: 2px solid var(--primary);
 		outline-offset: 2px;
 	}
 	.visuallyHidden {
@@ -640,15 +930,51 @@
 		flex: 1;
 	}
 
-	/* after .clipEnd so it wins */
+	/* Both after .clipEnd, so they win over its overflow: clip */
 	.scrollY {
 		overflow-y: auto;
-		/* still scrolls, just without a visible bar */
-		scrollbar-width: none; /* Firefox, Chrome 121+, Safari 18.2+ */
-		-ms-overflow-style: none; /* old Edge/IE */
 	}
-	.scrollY::-webkit-scrollbar {
-		display: none; /* older Chrome and Safari */
+	.scrollBoth {
+		overflow: auto;
+	}
+
+	/* Gilt, so the bars read as part of the instrument: both looks set --gilt and --gilt-fine on
+	   their root and custom properties inherit down to here. Shared by the settings panel and the
+	   rest view. The bar keeps its size at all times and only its colors come and go, so content
+	   doesn't reflow when the pointer enters. */
+	.scrollbars {
+		scrollbar-width: thin; /* Firefox, Chrome 121+, Safari 18.2+ */
+		scrollbar-color: transparent transparent;
+		transition: scrollbar-color var(--transition-time) ease;
+	}
+	/* focus-within too, so it's still there for anyone tabbing through the controls */
+	.scrollbars:hover,
+	.scrollbars:focus-within {
+		scrollbar-color: var(--gilt-fine, var(--primary-hover)) var(--gilt, transparent);
+	}
+	/* WebKit needs its own set. Styling them also opts out of the overlay bar that only appears
+	   while scrolling, which is what lets hover decide when it shows. */
+	.scrollbars::-webkit-scrollbar {
+		width: 0.4rem;
+		height: 0.4rem; /* the horizontal bar, for the rest view */
+	}
+	.scrollbars::-webkit-scrollbar-track,
+	.scrollbars::-webkit-scrollbar-thumb,
+	.scrollbars::-webkit-scrollbar-corner {
+		background: transparent;
+		border-radius: 0.2rem;
+		transition: background var(--transition-time) ease;
+	}
+	.scrollbars:hover::-webkit-scrollbar-track,
+	.scrollbars:focus-within::-webkit-scrollbar-track {
+		background: var(--gilt, transparent);
+	}
+	.scrollbars:hover::-webkit-scrollbar-thumb,
+	.scrollbars:focus-within::-webkit-scrollbar-thumb {
+		background: var(--gilt-fine, var(--primary-hover));
+	}
+	.scrollbars::-webkit-scrollbar-thumb:hover {
+		background: var(--primary-hover);
 	}
 
 	.manyline {

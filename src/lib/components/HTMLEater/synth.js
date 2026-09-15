@@ -13,6 +13,20 @@ const NOTE_OFFSETS = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 };
 const MAX_MIDI = 127;
 const A_CODE = 'a'.charCodeAt(0);
 
+/** The twelve pitch classes, sharps only, in the order a root select shows them. */
+export const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+/**
+ * Named scales, as semitones above the root. `scaleMapFor` turns one into the 12-note map the
+ * synth actually quantizes with; 'chromatic' maps every note to itself, so it's the off switch.
+ */
+export const scales = {
+	major: { label: 'Major', steps: [0, 2, 4, 5, 7, 9, 11] },
+	minor: { label: 'Minor', steps: [0, 2, 3, 5, 7, 8, 10] },
+	harmonicMinor: { label: 'Harmonic minor', steps: [0, 2, 3, 5, 7, 8, 11] },
+	chromatic: { label: 'Chromatic (off)', steps: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] }
+};
+
 const MIN_STEP_MS = 5; // an interval of 0 would make the loop spin forever
 const MIN_TIME_MS = 1; // envelope stages can't be zero-length
 
@@ -20,13 +34,20 @@ const MIN_TIME_MS = 1; // envelope stages can't be zero-length
 export const defaults = {
 	stepInterval: 40,
 	tonalCenter: 'A3', // the note 'a' plays; every character is counted from it
+	scaleRoot: 'A', // root of the quantizing scale, independent of the tonal center
+	scale: 'major', // a key of `scales`; 'chromatic' leaves every note where it landed
 	volume: 100,
 	drumVolume: 0.35, // gain on all drums, relative to the waves
 	voice: { attack: 5, decay: 100, sustain: 0.1, release: 50 },
 	sawFilter: { frequency: 800, gain: -12 }
 };
 
-const settings = structuredClone(defaults);
+const settings = {
+	...structuredClone(defaults),
+	// output pitch class for each of the twelve input pitch classes, C first. The UI's 12x12 grid
+	// edits this directly, so a named scale is only ever a starting point.
+	scaleMap: scaleMapFor(defaults.scaleRoot, defaults.scale)
+};
 let tonalCenterMidi = noteToMidi(settings.tonalCenter);
 
 let Tone;
@@ -57,8 +78,38 @@ export function noteToMidi(name) {
 
 /** Note name for a MIDI number, like 57 → 'A3' (C4 = 60), in sharps so noteToMidi reads it back. */
 export function midiToNote(midi) {
-	const names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-	return `${names[midi % 12]}${Math.floor(midi / 12) - 1}`;
+	return `${noteNames[midi % 12]}${Math.floor(midi / 12) - 1}`;
+}
+
+/**
+ * The 12-note map for a named scale: each input pitch class paired with the next pitch class at or
+ * above it that the scale allows. An unknown root or scale gives the identity map (no quantizing).
+ */
+export function scaleMapFor(rootName, scaleName) {
+	const root = noteNames.indexOf(
+		String(rootName ?? '')
+			.trim()
+			.toUpperCase()
+	);
+	const scale = scales[scaleName];
+	if (root === -1 || !scale) return noteNames.map((_, pitch) => pitch);
+
+	return noteNames.map((_, pitch) => {
+		const degree = (((pitch - root) % 12) + 12) % 12;
+		for (let lift = 0; lift < 12; lift++) {
+			if (scale.steps.includes((degree + lift) % 12)) return (pitch + lift) % 12;
+		}
+		return pitch;
+	});
+}
+
+/**
+ * Sends a note to the pitch class the map assigns it, raising it by up to 11 semitones. A note
+ * mapped to itself doesn't move. Only ever raises, so the caller's lower bound still holds.
+ */
+export function quantize(midi) {
+	const target = settings.scaleMap[((midi % 12) + 12) % 12];
+	return midi + ((((target - midi) % 12) + 12) % 12);
 }
 
 /** MIDI note for a character, or null for whitespace (a silent step). */
@@ -66,11 +117,14 @@ export function charToMidi(char) {
 	if (/\s/.test(char)) return null;
 
 	// 'a' is the tonal center, one semitone per character code away from 'a'
-	const midi = tonalCenterMidi + char.charCodeAt(0) - A_CODE;
+	let midi = tonalCenterMidi + char.charCodeAt(0) - A_CODE;
 
-	// Out-of-range characters move by whole octaves, keeping their pitch class
-	if (midi < tonalCenterMidi) return midi + 12 * Math.ceil((tonalCenterMidi - midi) / 12);
-	if (midi > MAX_MIDI) return midi - 12 * Math.ceil((midi - MAX_MIDI) / 12);
+	// Characters below the center move up by whole octaves, keeping their pitch class
+	if (midi < tonalCenterMidi) midi += 12 * Math.ceil((tonalCenterMidi - midi) / 12);
+
+	// Quantizing last, so a note pushed up by the scale still lands in range
+	midi = quantize(midi);
+	if (midi > MAX_MIDI) midi -= 12 * Math.ceil((midi - MAX_MIDI) / 12);
 	return midi;
 }
 
@@ -157,6 +211,16 @@ export function setTonalCenter(name) {
 	if (midi === null) return;
 	settings.tonalCenter = name.trim();
 	tonalCenterMidi = midi;
+}
+
+/**
+ * The whole scale, as twelve output pitch classes indexed by input pitch class (C first). Anything
+ * that isn't twelve numbers in 0-11 is ignored, so a half-built map can't silence the synth.
+ */
+export function setScaleMap(map) {
+	if (!Array.isArray(map) || map.length !== 12) return;
+	if (!map.every((pitch) => Number.isInteger(pitch) && pitch >= 0 && pitch < 12)) return;
+	settings.scaleMap = [...map];
 }
 
 /** Master volume, 0–100. */
