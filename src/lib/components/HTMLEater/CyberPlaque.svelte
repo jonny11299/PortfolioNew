@@ -59,7 +59,10 @@
 		min-width: 0;
 		height: 100%;
 		padding-inline: calc(var(--height) * 0.5);
-		background: var(--gilt);
+		isolation: isolate; /* so the wash blends with the plate, not the page behind it */
+		/* --surface, not --gilt, so the plate reads as the same material as the synth's chrome; the
+		   gilt stays on the ring, the callouts and the glow */
+		background: var(--surface);
 		/* mixed toward the text color so it reads on light and dark themes alike */
 		color: color-mix(in srgb, var(--primary-hover) 90%, var(--text));
 		text-shadow: 0 0 0.35em color-mix(in srgb, var(--primary-hover) 50%, transparent);
@@ -72,6 +75,22 @@
 			0 var(--c)
 		);
 	}
+	/* The same wash the synth's container carries, so the plaques sit in the same light. z-index: -1
+	   keeps it above the plate's gilt but under the ring and the lettering, and the plate's clip-path
+	   takes the chamfered corners off it too. */
+	.plate::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		background:
+			linear-gradient(var(--primary-hover), var(--primary-hover)), linear-gradient(#fff, #fff);
+		filter: contrast(2) invert(1);
+		mix-blend-mode: overlay;
+		opacity: 0.05;
+		pointer-events: none;
+	}
+
 	/* keeps the content above the ring, which is positioned */
 	.plate > :global(*) {
 		position: relative;

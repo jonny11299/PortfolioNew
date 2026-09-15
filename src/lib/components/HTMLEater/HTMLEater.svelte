@@ -210,7 +210,7 @@
 
 <div class="htmlEater">
 	<PlaqueLook --plaque-height="3.25rem">
-		<h2 class="name" class:cursor={look === 'cyber'}>HTML Eater</h2>
+		<h2 class="name" class:cursor={look === 'cyber'}>Web Muncher</h2>
 	</PlaqueLook>
 
 	<PlaqueLook>
