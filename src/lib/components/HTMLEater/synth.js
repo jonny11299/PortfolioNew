@@ -21,9 +21,8 @@ export const defaults = {
 	stepInterval: 40,
 	tonalCenter: 'A3', // the note 'a' plays; every character is counted from it
 	volume: 100,
-	drumVolume: 0.3, // gain on all drums, relative to the waves
-	// hold: how long a note sits at the sustain level before releasing
-	voice: { attack: 5, decay: 100, sustain: 0.1, hold: 0, release: 50 },
+	drumVolume: 0.35, // gain on all drums, relative to the waves
+	voice: { attack: 5, decay: 100, sustain: 0.1, release: 50 },
 	sawFilter: { frequency: 800, gain: -12 }
 };
 
@@ -54,6 +53,12 @@ export function noteToMidi(name) {
 	const shift = { '#': 1, b: -1, B: -1 }[accidental] ?? 0;
 	const midi = (Number(octave) + 1) * 12 + NOTE_OFFSETS[letter.toLowerCase()] + shift;
 	return midi >= 0 && midi <= MAX_MIDI ? midi : null;
+}
+
+/** Note name for a MIDI number, like 57 → 'A3' (C4 = 60), in sharps so noteToMidi reads it back. */
+export function midiToNote(midi) {
+	const names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+	return `${names[midi % 12]}${Math.floor(midi / 12) - 1}`;
 }
 
 /** MIDI note for a character, or null for whitespace (a silent step). */
@@ -161,16 +166,54 @@ export function setVolume(level) {
 }
 
 /** Envelope times in ms, sustain 0–1. Applies to notes scheduled from now on. */
-export function setVoice({ attack, decay, sustain, hold, release }) {
+export function setVoice({ attack, decay, sustain, release }) {
 	const voice = settings.voice;
 	settings.voice = {
 		attack: clamp(attack, voice.attack, MIN_TIME_MS),
 		decay: clamp(decay, voice.decay, MIN_TIME_MS),
 		sustain: clamp(sustain, voice.sustain, 0, 1),
-		hold: clamp(hold, voice.hold, 0),
 		release: clamp(release, voice.release, MIN_TIME_MS)
 	};
 	applyVoice();
+}
+
+/**
+ * The voice envelope as [ms, level] points for drawing, following Tone's default curves: a
+ * linear attack, then exponential decay and release. Notes release as soon as decay ends, but
+ * the sustain level gets a plateau a quarter as long as the other stages so it stays visible.
+ */
+export function envelopePoints({ attack, decay, sustain, release }) {
+	const fallback = defaults.voice;
+	const a = clamp(attack, fallback.attack, MIN_TIME_MS);
+	const d = clamp(decay, fallback.decay, MIN_TIME_MS);
+	const s = clamp(sustain, fallback.sustain, 0, 1);
+	const r = clamp(release, fallback.release, MIN_TIME_MS);
+	const plateau = (a + d + r) / 4;
+	const releaseStart = a + d + plateau;
+
+	return {
+		points: [
+			[0, 0],
+			[a, 1],
+			...approach(1, s, a, d),
+			[releaseStart, s],
+			...approach(s, 0, releaseStart, r)
+		],
+		duration: releaseStart + r
+	};
+}
+
+// Samples Tone's exponentialApproachValueAtTime: a setTargetAtTime curve for 90% of the ramp,
+// then a linear ramp the rest of the way. Tone works in seconds, these points in ms.
+function approach(from, to, start, duration, samples = 24) {
+	const timeConstant = (Math.log(duration / 1000 + 1) / Math.log(200)) * 1000;
+	const points = [];
+	for (let i = 1; i <= samples; i++) {
+		const t = (0.9 * duration * i) / samples;
+		points.push([start + t, to + (from - to) * Math.exp(-t / timeConstant)]);
+	}
+	points.push([start + duration, to]);
+	return points;
 }
 
 /** High shelf on the sawtooth wave: frequency in Hz, gain in dB (negative cuts). Applies immediately. */
@@ -213,8 +256,8 @@ export async function start({ next, onStep, onEnd }) {
 			noises[drum].triggerAttack(time);
 		} else if (midi !== null) {
 			// release once attack and decay have played out and the note has held at sustain
-			const { attack, decay, hold } = settings.voice;
-			const noteLength = (attack + decay + hold) / 1000;
+			const { attack, decay } = settings.voice;
+			const noteLength = (attack + decay) / 1000;
 			const frequency = Tone.Frequency(midi, 'midi').toFrequency();
 			synths[step.wave].triggerAttackRelease(frequency, noteLength, time);
 		}

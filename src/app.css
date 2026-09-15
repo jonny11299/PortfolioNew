@@ -93,7 +93,7 @@
 		cover;
 	background-attachment: fixed;
 
-	--surface: #fefefe;
+	--surface: #40008010;
 }
 
 /* --- Dark theme overrides --- */
@@ -285,7 +285,8 @@
 	--primary: #0dbffb;
 	--primary-hover: #d77423;
 	--secondary: #bda9ff;
-	--accent: #5c51b6;
+	/* --accent: #5c51b6; */
+	--accent: #429f55;
 	--border: rgba(41, 41, 41, 0.78);
 
 	--border-width: 0;
@@ -489,7 +490,6 @@ h6 {
 .measure {
 	max-width: var(--measure);
 }
-
 
 a,
 p,

@@ -3,11 +3,18 @@
 	import * as synth from './synth.js';
 	import dataText from './data.text?raw';
 	import { classifyWaves } from './waves.js';
+	import Graph from './Graph.svelte';
+	import Knob from './Knob.svelte';
+	import Slider from './Slider.svelte';
+	import { tokenize, sliceRuns } from './highlight.js';
 
 	const settings =
 		'Mode: Arp / Chunk (mono / poly) (letter / word) Pitches per character Samples per word / symbol could actually form a way to generalize any sample with white noise... “sharpness” leads to shorter envelope volume on the screen leads to the filter being higher up';
 
+	// The text reload() goes back to: the bundled sample, or the last uploaded file
+	let loadedText = dataText;
 	let source = $state(dataText);
+	let sourceName = $state(''); // uploaded file's name, empty while on the bundled sample
 	// Index of the character currently being heard. Only set from the synth's onStep, so the
 	// display follows the audio clock.
 	let position = $state(-1);
@@ -16,7 +23,8 @@
 	let scheduledPosition = -1;
 
 	let msPause = $state(synth.defaults.stepInterval);
-	let tonalCenter = $state(synth.defaults.tonalCenter); // note name, e.g. C2
+	// a MIDI number for the knob; the synth gets it as a note name like A3
+	let tonalCenter = $state(synth.noteToMidi(synth.defaults.tonalCenter));
 	let volume = $state(synth.defaults.volume); // 0–100
 	let drumVolume = $state(synth.defaults.drumVolume); // 0–1, relative to the waves
 	let voice = $state({ ...synth.defaults.voice }); // ms, sustain 0–1
@@ -27,20 +35,27 @@
 	let read_settings = ['fixed_width', 'to_newline'];
 	let read_setting = $state(read_settings[1]);
 
-	let view = $derived(splitView(source, position, read_setting));
+	// A number, not an object, so the rest view only re-slices when its start actually moves
+	let restStart = $derived(findRestStart(source, position, read_setting));
 	let waves = $derived(classifyWaves(source)); // oscillator type per character
+	let tokens = $derived(tokenize(source)); // syntax highlighting runs over the whole source
+	// the reader char, the rest of its chunk, and everything after, as highlighted runs
+	let readerRuns = $derived(position < 0 ? [] : sliceRuns(tokens, source, position, position + 1));
+	let queuedRuns = $derived(position < 0 ? [] : sliceRuns(tokens, source, position + 1, restStart));
+	let restRuns = $derived(sliceRuns(tokens, source, restStart));
+	let envelope = $derived(synth.envelopePoints(voice)); // what the voice graph draws
 
 	// Push settings to the synth whenever they change; it holds them until Tone has loaded
 	$effect(() => synth.setStepInterval(msPause));
-	$effect(() => synth.setTonalCenter(tonalCenter));
+	$effect(() => synth.setTonalCenter(synth.midiToNote(tonalCenter)));
 	$effect(() => synth.setVolume(volume));
 	$effect(() => synth.setDrumVolume(drumVolume));
 	$effect(() => synth.setVoice({ ...voice }));
 	$effect(() => synth.setSawFilter({ ...sawFilter }));
 
-	// Splits the text around `pos` into the reader char, the rest of its chunk, and everything after
-	function splitView(text, pos, setting) {
-		if (pos < 0) return { reader: '', queued: '', rest: text };
+	// Where the chunk holding `pos` ends, which is where the rest view starts
+	function findRestStart(text, pos, setting) {
+		if (pos < 0) return 0;
 
 		let chunkEnd;
 		if (setting === 'fixed_width') {
@@ -56,11 +71,7 @@
 			chunkEnd = Math.min(lineEnd, chunkStart + maxQueueLength);
 		}
 
-		return {
-			reader: text[pos],
-			queued: text.slice(pos + 1, chunkEnd),
-			rest: text.slice(chunkEnd)
-		};
+		return chunkEnd;
 	}
 
 	async function play() {
@@ -93,9 +104,19 @@
 	function reload() {
 		synth.stop({ immediate: true });
 		playing = false;
-		source = dataText;
+		source = loadedText;
 		position = -1;
 		scheduledPosition = -1;
+	}
+
+	async function onPick(event) {
+		const input = event.currentTarget;
+		const file = input.files[0];
+		input.value = ''; // so picking the same file again still fires change
+		if (!file) return;
+		loadedText = await file.text();
+		sourceName = file.name;
+		reload();
 	}
 
 	onMount(() => {
@@ -103,6 +124,10 @@
 		return () => synth.stop({ immediate: true });
 	});
 </script>
+
+<!-- one line on purpose: whitespace inside <pre> is shown -->
+{#snippet highlighted(runs)}{#each runs as run (run.key)}<span class={run.classes}>{run.text}</span
+		>{/each}{/snippet}
 
 <div class="testing">
 	<button onclick={() => play()}>play</button>
@@ -117,20 +142,28 @@
 				<div class="tab center">
 					<h2 class="title1">HTML Eater</h2>
 				</div>
-				<div class="tab center fill">
+				<div class="tab center fill sourceTab">
 					<h3 class="title2">HTML Source:</h3>
-					<span> local</span>
+					<label class="upload" title="Choose an .html or .txt file">
+						{sourceName || 'upload'}
+						<input
+							class="visuallyHidden"
+							type="file"
+							accept=".html,.htm,.txt,.text,text/html,text/plain"
+							onchange={onPick}
+						/>
+					</label>
 				</div>
 			</div>
 			<div class="row">
-				<div class="tab oneline center" style="min-width: var(--space-xl)">
-					{view.reader}
+				<div class="tab oneline center code" style="min-width: var(--space-xl)">
+					{@render highlighted(readerRuns)}
 				</div>
-				<div class="tab oneline">{view.queued}</div>
+				<div class="tab oneline code">{@render highlighted(queuedRuns)}</div>
 			</div>
 			<div class="rest">
 				<div class="tab clipEnd">
-					<pre>{view.rest}</pre>
+					<pre class="code">{@render highlighted(restRuns)}</pre>
 				</div>
 			</div>
 		</div>
@@ -138,6 +171,7 @@
 			<div class="tab clipEnd scrollY">
 				<h3 class="title2">Synth Settings</h3>
 				<div class="settings">
+					<!--
 					<label>
 						Read mode
 						<select bind:value={read_setting}>
@@ -146,43 +180,109 @@
 							{/each}
 						</select>
 					</label>
-					<label>Step (ms) <input type="number" min="5" step="1" bind:value={msPause} /></label>
-					<label>
-						Tonal center
-						<input
-							type="text"
-							bind:value={tonalCenter}
-							aria-invalid={synth.noteToMidi(tonalCenter) === null}
+					 -->
+					<div class="sliders">
+						<Slider
+							label="Volume"
+							min={0}
+							max={100}
+							step={1}
+							reset={synth.defaults.volume}
+							bind:value={volume}
 						/>
-					</label>
-					<label>Volume <input type="number" min="0" max="100" step="1" bind:value={volume} /></label>
-					<label>
-						Drum volume <input type="number" min="0" max="1" step="0.05" bind:value={drumVolume} />
-					</label>
+						<Slider
+							label="Drum volume"
+							min={0}
+							max={1}
+							step={0.01}
+							reset={synth.defaults.drumVolume}
+							bind:value={drumVolume}
+						/>
+					</div>
+					<div class="knobs">
+						<!-- the value is the pause between characters, so clockwise shortens it -->
+						<Knob
+							label="Speed"
+							unit="ms"
+							min={5}
+							max={1000}
+							step={1}
+							log
+							reverse
+							reset={synth.defaults.stepInterval}
+							bind:value={msPause}
+						/>
+						<Knob
+							label="Tonal center"
+							min={24}
+							max={84}
+							step={1}
+							format={synth.midiToNote}
+							reset={synth.noteToMidi(synth.defaults.tonalCenter)}
+							bind:value={tonalCenter}
+						/>
+					</div>
 
 					<h4>Voice</h4>
-					<label
-						>Attack (ms) <input type="number" min="1" step="1" bind:value={voice.attack} /></label
-					>
-					<label>Decay (ms) <input type="number" min="1" step="1" bind:value={voice.decay} /></label
-					>
-					<label>
-						Sustain (0–1)
-						<input type="number" min="0" max="1" step="0.05" bind:value={voice.sustain} />
-					</label>
-					<label>Hold (ms) <input type="number" min="0" step="1" bind:value={voice.hold} /></label>
-					<label>
-						Release (ms) <input type="number" min="1" step="1" bind:value={voice.release} />
-					</label>
-
+					<div class="voice">
+						<Graph points={envelope.points} xMax={envelope.duration} label="Voice envelope" />
+						<div class="knobs">
+							<Knob
+								label="Attack"
+								unit="ms"
+								min={1}
+								max={2000}
+								step={1}
+								log
+								reset={synth.defaults.voice.attack}
+								bind:value={voice.attack}
+							/>
+							<Knob
+								label="Decay"
+								unit="ms"
+								min={1}
+								max={2000}
+								step={1}
+								log
+								reset={synth.defaults.voice.decay}
+								bind:value={voice.decay}
+							/>
+							<Knob
+								label="Sustain"
+								min={0}
+								max={1}
+								step={0.01}
+								reset={synth.defaults.voice.sustain}
+								bind:value={voice.sustain}
+							/>
+							<Knob
+								label="Release"
+								unit="ms"
+								min={1}
+								max={2000}
+								step={1}
+								log
+								reset={synth.defaults.voice.release}
+								bind:value={voice.release}
+							/>
+						</div>
+					</div>
+					<!--
 					<h4>Sawtooth filter</h4>
 					<label>
 						Shelf (Hz)
 						<input type="number" min="20" max="20000" step="50" bind:value={sawFilter.frequency} />
 					</label>
 					<label>
-						Gain (dB) <input type="number" min="-40" max="12" step="1" bind:value={sawFilter.gain} />
+						Gain (dB) <input
+							type="number"
+							min="-40"
+							max="12"
+							step="1"
+							bind:value={sawFilter.gain}
+						/>
 					</label>
+					 -->
 				</div>
 			</div>
 		</div>
@@ -202,6 +302,27 @@
 		tab-size: 2;
 	}
 
+	/* Syntax colors. Classes are Prism token types, outermost first, so where rules overlap
+	   (a quote is `tag attr-value punctuation`) the later rule wins. */
+	.code :global(.tag) {
+		color: var(--primary);
+	}
+	.code :global(:is(.attr-name, .selector, .property, .function, .class-name)) {
+		color: var(--secondary);
+	}
+	.code :global(:is(.attr-value, .string, .regex, .url)) {
+		color: var(--accent);
+	}
+	.code :global(:is(.keyword, .atrule, .important)) {
+		color: var(--primary-hover);
+	}
+	.code :global(:is(.number, .boolean, .constant, .entity)) {
+		color: var(--text-warn);
+	}
+	.code :global(:is(.punctuation, .operator, .comment, .prolog, .doctype, .cdata)) {
+		color: var(--text-muted);
+	}
+
 	.testing {
 		background-color: var(--surface);
 		border: var(--border-width) solid var(--border);
@@ -215,6 +336,7 @@
 	.container {
 		background-color: var(--surface);
 		border: var(--border-width) solid var(--border);
+		border-radius: var(--border-radius);
 		display: block;
 		width: 100%;
 		aspect-ratio: 4 / 3;
@@ -265,13 +387,17 @@
 	}
 
 	.tab {
-		border: 2px solid var(--text-muted);
+		background-color: var(--bg);
+		border: var(--border-width) solid var(--text-muted);
 		border-radius: var(--border-radius);
 		margin: var(--space-2xs);
 		padding-inline: var(--space-2xs);
 		padding-block: var(--space-2xs);
 
 		overflow-wrap: anywhere;
+	}
+	[data-theme='light'] .tab {
+		border: 1px solid var(--text-muted);
 	}
 
 	.settings {
@@ -288,13 +414,65 @@
 		grid-column: 1 / -1;
 		margin: var(--space-2xs) 0 0;
 	}
+	.voice {
+		grid-column: 1 / -1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-2xs);
+	}
+	.sliders {
+		grid-column: 1 / -1;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2xs);
+	}
+	.knobs {
+		grid-column: 1 / -1; /* spans the settings grid when it isn't inside .voice */
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-around;
+		gap: var(--space-2xs);
+		width: 100%;
+	}
 	.settings input,
 	.settings select {
 		width: 100%;
 		min-width: 0;
 	}
-	.settings input[aria-invalid='true'] {
-		outline: 2px solid crimson;
+
+	.sourceTab {
+		gap: var(--space-2xs);
+		min-width: 0;
+	}
+	/* the title keeps its one line; the file name shrinks and truncates instead */
+	.sourceTab h3 {
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+	.upload {
+		cursor: pointer;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		min-width: 0;
+	}
+	.upload:hover {
+		color: var(--secondary);
+		text-decoration: underline;
+	}
+	/* keyboard focus only, so a mouse click doesn't leave an outline behind */
+	.upload:has(input:focus-visible) {
+		outline: 2px solid var(--secondary);
+		outline-offset: 2px;
+	}
+	.visuallyHidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
 	}
 
 	.center {
@@ -329,6 +507,12 @@
 	/* after .clipEnd so it wins */
 	.scrollY {
 		overflow-y: auto;
+		/* still scrolls, just without a visible bar */
+		scrollbar-width: none; /* Firefox, Chrome 121+, Safari 18.2+ */
+		-ms-overflow-style: none; /* old Edge/IE */
+	}
+	.scrollY::-webkit-scrollbar {
+		display: none; /* older Chrome and Safari */
 	}
 
 	.manyline {

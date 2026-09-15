@@ -13,7 +13,7 @@ features to add to my html eater:
 
 
 
-Can we also please implement an ADSR curve displayed as a graph?
+Can we please implement an ADSR curve displayed as a graph?
 We should have a 2d graph that is controlled by 4 knobs in "Synth Settings." Let's make "Graph.svelte" and "Knob.svelte" components to facilitate this. Please me sure to use css variables.
 
 In general, the Voice section of Synth Settings should show the 2D graph above the 4 knobs. It should be a fixed width and height.

@@ -10,12 +10,12 @@ export const drums = {
 	burst: {
 		filter: { type: 'highpass', frequency: 2000 },
 		envelope: { attack: 0.001, decay: 0.15 },
-		level: -18
+		level: -20
 	},
 	swell: {
 		filter: { type: 'highpass', frequency: 2000 },
 		envelope: { attack: 0.15, attackCurve: REVERSE_CURVE, decay: 0.005 },
-		level: -18
+		level: -20
 	},
 	hihat: {
 		filter: { type: 'highpass', frequency: 7000 },
@@ -30,13 +30,13 @@ export const drums = {
 	snare: {
 		filter: { type: 'bandpass', frequency: 1800, Q: 0.8 },
 		envelope: { attack: 0.001, decay: 0.15 },
-		level: -14
+		level: -17
 	},
 	// every other punctuation mark or symbol
 	tick: {
 		filter: { type: 'bandpass', frequency: 5000, Q: 2 },
 		envelope: { attack: 0.001, decay: 0.008 },
-		level: -14
+		level: -15
 	}
 };
 
