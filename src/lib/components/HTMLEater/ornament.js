@@ -162,3 +162,17 @@ export const plaqueEnd = {
 	half: leaves([27, 18, 205, 22, -4.5]),
 	center: { strokes: [endCurl], lines: [endCurl], dots: [[3, 30, 2]] }
 };
+
+// CyberFrame's crest, viewBox 0 0 100 50: the one rococo note left, a small shell sitting on the
+// band with a curl either side. `half` is the left curl.
+const miniShell = shell(50, 48, 26, 180, 360, 7);
+const miniCurl = spiral(20, 42, 6, 0, 1.3, false);
+export const miniCrest = {
+	mirror: 'translate(100 0) scale(-1 1)',
+	half: { strokes: [miniCurl], lines: [miniCurl] },
+	center: {
+		fills: [miniShell.body],
+		lines: [miniShell.ribs, miniShell.arc],
+		dots: [[50, 12, 2.6]]
+	}
+};

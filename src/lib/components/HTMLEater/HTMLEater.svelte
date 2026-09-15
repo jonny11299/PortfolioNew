@@ -3,6 +3,8 @@
 	import * as synth from './synth.js';
 	import dataText from './data.text?raw';
 	import { classifyWaves } from './waves.js';
+	import CyberFrame from './CyberFrame.svelte';
+	import CyberPlaque from './CyberPlaque.svelte';
 	import Frame from './Frame.svelte';
 	import Graph from './Graph.svelte';
 	import Knob from './Knob.svelte';
@@ -46,6 +48,18 @@
 	let queuedRuns = $derived(position < 0 ? [] : sliceRuns(tokens, source, position + 1, restStart));
 	let restRuns = $derived(sliceRuns(tokens, source, restStart));
 	let envelope = $derived(synth.envelopePoints(voice)); // what the voice graph draws
+
+	// Which frame and plaques to wrap the synth in: 'cyber' (lowkey, with HUD readouts) or 'rococo'
+	const look = 'cyber';
+	const FrameLook = look === 'cyber' ? CyberFrame : Frame;
+	const PlaqueLook = look === 'cyber' ? CyberPlaque : Plaque;
+	// corner readouts for the cyber frame; the rococo one ignores them
+	let hud = $derived({
+		tl: `src://${sourceName || 'local'}`,
+		tr: playing ? '● playing' : '○ idle',
+		bl: `${String(position + 1).padStart(5, '0')} / ${source.length}`,
+		br: `${msPause} ms · ${synth.midiToNote(tonalCenter)}`
+	});
 
 	// Push settings to the synth whenever they change; it holds them until Tone has loaded
 	$effect(() => synth.setStepInterval(msPause));
@@ -132,11 +146,11 @@
 		>{/each}{/snippet}
 
 <div class="htmlEater">
-	<Plaque --plaque-height="3.25rem">
-		<h2 class="name">HTML Eater</h2>
-	</Plaque>
+	<PlaqueLook --plaque-height="3.25rem">
+		<h2 class="name" class:cursor={look === 'cyber'}>HTML Eater</h2>
+	</PlaqueLook>
 
-	<Plaque>
+	<PlaqueLook>
 		<div class="playback">
 			<button class:active={playing} onclick={() => play()}>play</button>
 			<span class="divider" aria-hidden="true">◆</span>
@@ -144,9 +158,9 @@
 			<span class="divider" aria-hidden="true">◆</span>
 			<button onclick={() => reload()}>reload</button>
 		</div>
-	</Plaque>
+	</PlaqueLook>
 
-	<Frame shimmer={playing}>
+	<FrameLook shimmer={playing} tags={hud}>
 		<div class="container">
 			<div class="columns">
 				<div class="leftPanel">
@@ -309,7 +323,7 @@
 				</div>
 			</div>
 		</div>
-	</Frame>
+	</FrameLook>
 </div>
 
 <style>
@@ -363,6 +377,21 @@
 		text-transform: uppercase;
 		white-space: nowrap;
 	}
+	/* a blinking terminal cursor, for the cyber look */
+	.name.cursor::after {
+		content: '_';
+		animation: blink 1.1s steps(1) infinite;
+	}
+	@keyframes blink {
+		50% {
+			opacity: 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.name.cursor::after {
+			animation: none;
+		}
+	}
 
 	.playback {
 		display: flex;
@@ -400,6 +429,7 @@
 	}
 
 	.container {
+		box-sizing: border-box; /* width: 100% and aspect-ratio now include padding and border */
 		background-color: var(--surface);
 		border: var(--border-width) solid var(--border);
 		border-radius: var(--border-radius);
@@ -407,6 +437,8 @@
 		width: 100%;
 		aspect-ratio: 4 / 3;
 		overflow: hidden;
+
+		padding: var(--space-2xs);
 	}
 
 	.columns {

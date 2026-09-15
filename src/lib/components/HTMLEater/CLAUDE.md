@@ -15,6 +15,7 @@ A synth that "eats" HTML source, playing one sound per character while the UI fo
 - `Graph.svelte`: fixed-size line graph of `[x, y]` points, stretched to fill its box; optional `grid`, `ticks`, `marker` and `axis` labels
 - `Frame.svelte`: gilt rococo mirror frame around its children, with `shimmer` for a traveling glint
 - `Plaque.svelte`: engraved gilt plate with scrolled ends, sized by `--plaque-height`
+- `CyberFrame.svelte`, `CyberPlaque.svelte`: the lowkey look, chamfered with neon, HUD brackets, corner `tags` and one small shell (`miniCrest`)
 - `Ornament.svelte`: draws one two-tone ornament from `ornament.js`
 - `ornament.js`: path generators (`spiral`, `scroll`, `leaf`, `shell`) and the `corner`, `crest`, `side` and `plaqueEnd` ornaments
 - `HTMLEater-old.svelte`: original SVG layout mockup, reference only
@@ -54,7 +55,10 @@ Each step is a rest (whitespace), a drum (punctuation or symbol, `[\p{P}\p{S}]`)
 
 ## Look
 
-- Column order: name plaque, playback plaque (play, pause, reload), then the synth inside `Frame`.
+- Column order: name plaque, playback plaque (play, pause, reload), then the synth inside the frame.
+- `look` in `HTMLEater.svelte` picks the frame and plaques: `'cyber'` (`CyberFrame`, `CyberPlaque`, a blinking cursor on the name, and `hud` readouts passed as `tags`) or `'rococo'` (`Frame`, `Plaque`).
+- CyberFrame's chamfered rings are `clip-path` polygons: outer outline plus inner outline, filled `evenodd`. The inner corner cut is `--c − 0.586 × --t` so diagonals keep the edge thickness. Its glow sits on the `.neon` wrapper, because a filter on a clipped element is clipped with it. The glass is chamfered too, parallel to the rail, or its corners poke past the rail's diagonals. Every inset ring's cut is `--chamfer − (distance in from the band's outer edge) × 0.586`.
+- Both frames share the glass grain, vignette and sheen, and a glint that travels clockwise while playing. CyberFrame adds scanlines, a rail light sweep and a neon flicker. Keep these when restyling.
 - Gilt colors are `--gilt` (`--primary-hover` at 50%) for bodies and `--gilt-fine` (90%) for fine details. They're mixed into `--bg` (override with `--frame-backdrop`) instead of made transparent, so overlapping pieces don't stack brighter.
 - `Frame` reserves its space with padding. Everything scales from `--frame-size`: the band, beads and leaf garlands are CSS; the corners, crest, bottom apron and side cartouches are SVG from `ornament.js`, where 100 units equal `--frame-size`. Each viewBox's band position must line up with `.band`; the comments in `ornament.js` give the numbers.
 - Ornament art must stay out of the glass (for corners, the x > 40, y > 40 quarter), since it sits on top of the content.
