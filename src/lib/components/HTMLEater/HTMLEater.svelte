@@ -15,6 +15,10 @@
 	const settings =
 		'Mode: Arp / Chunk (mono / poly) (letter / word) Pitches per character Samples per word / symbol could actually form a way to generalize any sample with white noise... “sharpness” leads to shorter envelope volume on the screen leads to the filter being higher up';
 
+	// An uploaded file is cut to this many characters: a whole page of markup is thousands of
+	// steps of audio nobody waits through, and highlighting it all makes the panel crawl.
+	const MAX_SOURCE_CHARS = 30000;
+
 	// The text reload() goes back to: the bundled sample, or the last uploaded file
 	let loadedText = dataText;
 	let source = $state(dataText);
@@ -38,6 +42,8 @@
 	// and picking a named scale overwrites it.
 	let scaleMap = $state(synth.scaleMapFor(synth.defaults.scaleRoot, synth.defaults.scale));
 	let sawFilter = $state({ ...synth.defaults.sawFilter }); // frequency Hz, gain dB
+	// The preset select keeps a name only while the panel still matches it, like the scale select
+	let presetName = $derived(Object.keys(synth.presets).find(matchesPreset) ?? 'custom');
 	let playing = $state(false);
 	let queueLength = 50; // will load 50 chars into the top part
 	let maxQueueLength = 200;
@@ -74,6 +80,27 @@
 	$effect(() => synth.setVoice({ ...voice }));
 	$effect(() => synth.setScaleMap(scaleMap));
 	$effect(() => synth.setSawFilter({ ...sawFilter }));
+
+	// A preset only covers the settings it names, so the rest of the panel stays where it was
+	function matchesPreset(name) {
+		const preset = synth.presets[name].settings;
+		return (
+			msPause === preset.stepInterval &&
+			tonalCenter === synth.noteToMidi(preset.tonalCenter) &&
+			drumVolume === preset.drumVolume &&
+			Object.entries(preset.voice).every(([stage, ms]) => voice[stage] === ms)
+		);
+	}
+
+	function applyPreset(name) {
+		const preset = synth.presets[name]?.settings;
+		if (!preset) return; // 'custom' is only ever a readout, never a thing to apply
+
+		msPause = preset.stepInterval;
+		tonalCenter = synth.noteToMidi(preset.tonalCenter);
+		drumVolume = preset.drumVolume;
+		voice = { ...preset.voice };
+	}
 
 	const BLACK_KEYS = [1, 3, 6, 8, 10]; // C#, D#, F#, G#, A#
 	const isBlack = (pitch) => BLACK_KEYS.includes(pitch);
@@ -191,7 +218,8 @@
 		const file = input.files[0];
 		input.value = ''; // so picking the same file again still fires change
 		if (!file) return;
-		loadedText = await file.text();
+		// cut quietly: the row is already full, and a note here would run into the controls
+		loadedText = (await file.text()).slice(0, MAX_SOURCE_CHARS);
 		sourceName = file.name;
 		reload();
 	}
@@ -270,8 +298,21 @@
 				</div>
 				<div class="rightPanel">
 					<div class="tab clipEnd scrollY scrollbars">
-						<h3 class="title2">Synth Settings</h3>
+						<h3 class="title2">Synth</h3>
 						<div class="settings">
+							<label class="preset">
+								Preset
+								<select
+									value={presetName}
+									onchange={(event) => applyPreset(event.currentTarget.value)}
+								>
+									{#each Object.entries(synth.presets) as [name, { label }] (name)}
+										<option value={name}>{label}</option>
+									{/each}
+									<!-- only listed once the panel has been moved off a preset -->
+									{#if presetName === 'custom'}<option value="custom">Custom</option>{/if}
+								</select>
+							</label>
 							<!--
 							<label>
 								Read mode
@@ -300,7 +341,7 @@
 									bind:value={drumVolume}
 								/>
 							</div>
-							<div class="knobs">
+							<div class="knobs" style="margin-top: var(--space-s)">
 								<!-- the value is the pause between characters, so clockwise shortens it -->
 								<Knob
 									label="Speed"
@@ -377,7 +418,7 @@
 								</div>
 							</div>
 
-							<h4 style="margin-bottom: var(--space-2xs)">Scale</h4>
+							<h4 style="margin-bottom: var(--space-2xs); margin-top: var(--space-m)">Scale</h4>
 							<div class="scale">
 								<div class="scaleSelects">
 									<label>
@@ -726,17 +767,46 @@
 		align-items: center;
 		gap: var(--space-2xs);
 	}
+	/* the scale selects' lettering, but label and select share one line. Beats .settings label's
+	   display: contents, which splits a label across the panel's two columns. */
+	.settings label.preset {
+		grid-column: 1 / -1;
+		display: flex;
+		align-items: center;
+		gap: var(--space-2xs);
+		min-width: 0;
+		color: var(--text-muted);
+		font-size: calc(var(--step--1) * 0.85);
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+
+		margin-bottom: var(--space-2xs);
+	}
+	/* the site's global select padding is built for full-width forms, not this panel */
+	.preset select {
+		flex: 1;
+		min-width: 0;
+		margin: 0;
+		padding: 0.25em 0.4em;
+		color: var(--text);
+		font-size: var(--step--1);
+		letter-spacing: normal;
+		text-transform: none;
+	}
+
 	.sliders {
 		grid-column: 1 / -1;
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-2xs);
 	}
+	/* A fixed two columns, not a wrapping row: a readout dropping from three digits to two used to
+	   narrow its knob, which slid the rest along and could pull one onto a second line. Each knob
+	   centers itself in its half, so the dials hold their positions whatever the readouts say. */
 	.knobs {
 		grid-column: 1 / -1; /* spans the settings grid when it isn't inside .voice */
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-around;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: var(--space-2xs);
 		width: 100%;
 	}

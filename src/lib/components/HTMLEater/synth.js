@@ -42,6 +42,40 @@ export const defaults = {
 	sawFilter: { frequency: 800, gain: -12 }
 };
 
+/**
+ * Ready-made voicings for the preset select, each a patch of the settings it cares about (the rest
+ * stay wherever the panel left them). 'punctual' is `defaults`, so it's the way back.
+ */
+export const presets = {
+	punctual: {
+		label: 'Punctual',
+		settings: {
+			stepInterval: defaults.stepInterval,
+			tonalCenter: defaults.tonalCenter,
+			drumVolume: defaults.drumVolume,
+			voice: { ...defaults.voice }
+		}
+	},
+	speedSurfer: {
+		label: 'Speed Surfer',
+		settings: {
+			stepInterval: 10,
+			tonalCenter: 'C#5',
+			drumVolume: 0.4,
+			voice: { attack: 5, decay: 10, sustain: 0.71, release: 10 }
+		}
+	},
+	kickback: {
+		label: 'Kickback',
+		settings: {
+			stepInterval: 140,
+			tonalCenter: 'F2',
+			drumVolume: 0.4,
+			voice: { attack: 170, decay: 180, sustain: 0.68, release: 150 }
+		}
+	}
+};
+
 const settings = {
 	...structuredClone(defaults),
 	// output pitch class for each of the twelve input pitch classes, C first. The UI's 12x12 grid
