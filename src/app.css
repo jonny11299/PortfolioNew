@@ -295,6 +295,8 @@
 	--font-sans: 'Play', sans-serif;
 }
 
+/* image courtesy of https://frutigeraeroarchive.org/wallpapers#asadal */
+
 [data-theme='frutiger'] {
 	/* Backdrop photo is painted by the ::before layer below rather than here, so it
 	   stays locked to the viewport on iOS — background-attachment: fixed scales a
