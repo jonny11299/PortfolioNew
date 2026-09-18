@@ -296,20 +296,12 @@
 }
 
 [data-theme='frutiger'] {
-	background-image:
-		/* bubbles */
-		radial-gradient(circle at 18% 78%, rgba(255, 255, 255, 0.18) 0 6px, transparent 7px),
-		radial-gradient(circle at 72% 88%, rgba(255, 255, 255, 0.13) 0 11px, transparent 12px),
-		radial-gradient(circle at 88% 42%, rgba(255, 255, 255, 0.1) 0 4px, transparent 5px),
-		radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.09) 0 8px, transparent 9px),
-		/* green-blue swoosh */
-		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 900' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' y1='0' x2='1' y2='.3'%3E%3Cstop offset='0' stop-color='%232fd6a8' stop-opacity='.7'/%3E%3Cstop offset='.5' stop-color='%2338c9d4' stop-opacity='.55'/%3E%3Cstop offset='1' stop-color='%2318a3c9' stop-opacity='.45'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23a8f0b4' stop-opacity='.4'/%3E%3Cstop offset='1' stop-color='%235ce0d0' stop-opacity='.2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0,370 C300,270 460,510 760,436 C1010,374 1210,296 1440,342 L1440,900 L0,900 Z' fill='url(%23a)'/%3E%3Cpath d='M0,450 C260,390 500,560 800,494 C1060,438 1240,390 1440,430 L1440,900 L0,900 Z' fill='url(%23b)'/%3E%3Cpath d='M0,362 C300,262 460,502 760,428 C1010,366 1210,288 1440,334' fill='none' stroke='rgba(255,255,255,.45)' stroke-width='3'/%3E%3C/svg%3E"),
-		/* sky-to-water */ linear-gradient(170deg, #1d7ba8 0%, #12628f 40%, #0a4a72 70%, #06375a 100%);
-	background-attachment: fixed;
-	background-size: cover;
+	/* Backdrop photo is painted by the ::before layer below rather than here, so it
+	   stays locked to the viewport on iOS — background-attachment: fixed scales a
+	   `cover` image against the document height there, not the screen. */
 
 	/* Surfaces */
-	--bg: #0a4a72bb;
+	--bg: #accede;
 	--surface: rgba(255, 255, 255, 0.12);
 
 	/* Text */
@@ -320,10 +312,10 @@
 	--text-warn: #ffc98a;
 
 	/* Brand — all readable as text on the surfaces above */
-	--primary: #fce9b3;
-	--primary-hover: #c4fbd4;
-	--secondary: #a9dcff;
-	--accent: #dcf58a;
+	--primary: #d18165;
+	--primary-hover: #109d8e;
+	--secondary: #1b5470;
+	--accent: #3b9f55;
 
 	/* Structure */
 	--border: rgba(255, 255, 255, 0.4);
@@ -334,6 +326,30 @@
 	--font-sans: 'SN Pro', sans-serif;
 	--font-mono: 'Quicksand', sans-serif;
 	--font-scale: 1.05;
+}
+
+/* Frutiger backdrop — always exactly one viewport tall, full-bleed. `cover` keeps
+   the image filling the screen at every aspect ratio: on desktop/tablet it trims a
+   little sky off the top, and on portrait phones it shows full height and crops the
+   sides, which is the intended phone framing. */
+[data-theme='frutiger']::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background-image:
+		/* legibility scrim: white body text sits over a bright sky otherwise */
+		linear-gradient(
+			180deg,
+			rgba(6, 55, 90, 0.42) 0%,
+			rgba(6, 55, 90, 0.18) 42%,
+			rgba(6, 55, 90, 0.38) 100%
+		),
+		url('/asadal_stock_32.jpg');
+	background-repeat: no-repeat;
+	background-position: center bottom;
+	background-size: cover;
 }
 
 [data-theme='River Runs Deep'] {

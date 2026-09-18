@@ -102,6 +102,23 @@
 		margin-bottom: var(--space-l);
 	}
 
+	/*
+		The header is the only text that sits straight on the frutiger backdrop
+		instead of inside a .card, and it lands right over the photo's sun flare —
+		the brightest thing in the image. Give it the same glass so its contrast is
+		as predictable as everything else.
+	*/
+	:global([data-theme='frutiger']) .siteHeader {
+		background-color: var(--surface);
+		background-image: linear-gradient(
+			to bottom,
+			rgba(255, 255, 255, 0.14) 0%,
+			rgba(255, 255, 255, 0.02) 100%
+		);
+		backdrop-filter: blur(10px) saturate(1.4);
+		box-shadow: 0 2px 8px rgba(0, 40, 70, 0.3);
+	}
+
 	.headerInner {
 		padding-block: var(--space-s);
 		display: flex;
