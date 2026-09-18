@@ -303,7 +303,7 @@
 	   `cover` image against the document height there, not the screen. */
 
 	/* Surfaces */
-	--bg: #accede;
+	--bg: #5491b7aa;
 	--surface: rgba(255, 255, 255, 0.12);
 
 	/* Text */
@@ -315,9 +315,9 @@
 
 	/* Brand — all readable as text on the surfaces above */
 	--primary: #d18165;
-	--primary-hover: #109d8e;
-	--secondary: #1b5470;
-	--accent: #3b9f55;
+	--primary-hover: #15edce;
+	--secondary: #adf2ff;
+	--accent: #3bdfa5;
 
 	/* Structure */
 	--border: rgba(255, 255, 255, 0.4);
@@ -344,8 +344,8 @@
 		/* legibility scrim: white body text sits over a bright sky otherwise */
 		linear-gradient(
 			180deg,
-			rgba(6, 55, 90, 0.42) 0%,
-			rgba(6, 55, 90, 0.18) 42%,
+			rgba(6, 55, 90, 0.62) 0%,
+			rgba(6, 55, 90, 0.58) 42%,
 			rgba(6, 55, 90, 0.38) 100%
 		),
 		url('/asadal_stock_32.jpg');

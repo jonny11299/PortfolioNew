@@ -1,11 +1,9 @@
 <script>
 	import HTMLEater from '$lib/components/HTMLEater/HTMLEater.svelte';
-	import Stem from '$lib/components/Stem.svelte';
 </script>
 
 <div class="container">
-	<!-- <HTMLEater /> -->
-	<Stem />
+	<HTMLEater />
 </div>
 
 <style>

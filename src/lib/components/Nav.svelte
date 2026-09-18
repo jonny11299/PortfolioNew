@@ -8,6 +8,7 @@
 <nav class="card">
 	<div class="links">
 		<a href="/">Home</a>
+		<a href="/#webmuncher">Web Muncher</a>
 		<a href="/#projects">Projects</a>
 		<a href="/#tools">Tools</a>
 		<a href="/#ethos">Ethos</a>

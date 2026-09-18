@@ -7,6 +7,8 @@
 	import ToolsTurnstyle from '$lib/components/ToolsTurnstyle.svelte';
 	import Contact from '$lib/components/Contact.svelte';
 	import SocialIcon from '$lib/components/SocialIcon.svelte';
+	import HTMLEater from '$lib/components/HTMLEater/HTMLEater.svelte';
+	import CyberFrame from '$lib/components/HTMLEater/CyberFrame.svelte';
 
 	import me_piano from '$lib/imgs/IMG_9853.jpg';
 	import color_lab_preview from '$lib/imgs/color_lab_preview.jpg';
@@ -30,15 +32,24 @@
 				I'm <a href="/resume.pdf" target="_blank" rel="noopener">Jonathan Bischoff</a>, a Software
 				Engineer and Front-End specialist.
 			</p>
+			<br />
+			<p>I work in advertising technology, and I love music.</p>
 		</div>
 	</section>
+
+	<HTMLEater />
 
 	<section id="projects" class="card">
 		<ProjectsTurnstyle />
 	</section>
 
-	<section id="tools" class="card">
-		<ToolsTurnstyle />
+	<section id="tools">
+		<!-- the synth's frame, blinking on its own since there's no playback to follow -->
+		<CyberFrame shimmer>
+			<div class="framed">
+				<ToolsTurnstyle />
+			</div>
+		</CyberFrame>
 	</section>
 
 	<section id="ethos" class="card flow">
@@ -60,7 +71,9 @@
 		</p>
 
 		<p class="subhead">Modularity</p>
-		<p>Each component should function along the <span class="keyText">same design logic</span>.</p>
+		<p>
+			Each component should function along the <span class="keyText">same design logic</span>.
+		</p>
 		<p>
 			Learning <span class="keyText">one component</span> in-depth should inform the user how they
 			can expect <span class="keyText">future components</span> to work.
@@ -99,8 +112,13 @@
 		</p>
 	</section>
 
-	<section id="contact" class="card">
-		<Contact />
+	<section id="contact">
+		<!-- the synth's frame, blinking on its own since there's no playback to follow -->
+		<CyberFrame shimmer>
+			<div class="framed">
+				<Contact />
+			</div>
+		</CyberFrame>
 	</section>
 
 	<div class="finalIcons">
@@ -184,6 +202,16 @@
 		align-items: center;
 		margin-top: var(--space-m);
 		gap: var(--space-xs);
+	}
+
+	/* --- framed sections --- */
+	/*
+		CyberFrame replaces the card on these, so the body carries the padding the
+		card used to: the glass is clipped at the corners and content would run
+		into the cut.
+	*/
+	.framed {
+		padding: var(--space-xs) var(--space-s);
 	}
 
 	/* --- shared bits --- */

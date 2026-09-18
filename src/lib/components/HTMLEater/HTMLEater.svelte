@@ -236,7 +236,11 @@
 
 <svelte:window onkeydown={onKey} />
 
-<div class="htmlEater">
+<div class="htmlEater" id="webmuncher">
+	<p class="credit" style="margin-block: var(--space-2xl)">
+		Have you ever wondered what HTML sounds like?
+	</p>
+
 	<PlaqueLook --plaque-height="3.25rem">
 		<h2 class="name" class:cursor={look === 'cyber'}>Web Muncher</h2>
 	</PlaqueLook>
@@ -498,7 +502,7 @@
 		</div>
 	</FrameLook>
 
-	<p class="credit" style="margin-top: var(--space-3xl)">
+	<p class="credit" style="margin-block: var(--space-3xl)">
 		Huge thank you to Yotam Mann for creating tone.js, the open-source audio package this synth
 		relies on.
 	</p>
