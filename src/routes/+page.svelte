@@ -29,11 +29,11 @@
 		</a>
 		<div class="introText">
 			<p>
-				I'm <a href="/resume.pdf" target="_blank" rel="noopener">Jonathan Bischoff</a>, a Software
-				Engineer and Front-End specialist.
+				I'm <a href="/resume.pdf" target="_blank" rel="noopener">Jonathan Bischoff</a>, a Full Stack
+				Engineer.
 			</p>
 			<br />
-			<p>I work in advertising technology, and I love music.</p>
+			<p>I work in the world of digital advertising, and I love music.</p>
 		</div>
 	</section>
 
