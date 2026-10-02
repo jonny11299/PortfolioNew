@@ -82,7 +82,7 @@
 				<SocialIcon platform="linkedin" />
 			</div>
 			<div class="identityRow roleRow">
-				<p class="role">Front-End Engineer</p>
+				<p class="role">Full Stack Engineer, Ad Ops Manager</p>
 				<SocialIcon platform="github" />
 			</div>
 		</div>
